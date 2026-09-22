@@ -225,3 +225,58 @@
   font-family: 'Noto Serif Devanagari', serif;
   letter-spacing: 0.02em;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MANUSCRIPT PALETTE — responds to data-palette
+   Paper (ivory) and ink (brown) are constant.
+   Only gold + vermilion shift per palette.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Defaults — amber */
+  --manuscript-ivory:      38 55% 95%;
+  --manuscript-ivory-deep: 35 45% 90%;
+  --manuscript-brown:      22 35% 18%;
+  --manuscript-brown-soft: 22 25% 40%;
+  --manuscript-gold:       38 55% 48%;
+  --manuscript-gold-soft:  38 40% 62%;
+  --manuscript-vermilion:  6 60% 38%;
+}
+
+[data-palette='amber'] {
+  --manuscript-gold:       38 55% 48%;
+  --manuscript-gold-soft:  38 40% 62%;
+  --manuscript-vermilion:  6 60% 38%;
+}
+
+[data-palette='violet'] {
+  --manuscript-gold:       262 38% 54%;
+  --manuscript-gold-soft:  262 30% 70%;
+  --manuscript-vermilion:  280 50% 40%;
+}
+
+[data-palette='green'] {
+  --manuscript-gold:       142 38% 42%;
+  --manuscript-gold-soft:  142 28% 62%;
+  --manuscript-vermilion:  150 55% 28%;
+}
+
+[data-palette='rose'] {
+  --manuscript-gold:       346 45% 52%;
+  --manuscript-gold-soft:  346 35% 70%;
+  --manuscript-vermilion:  355 58% 40%;
+}
+
+[data-palette='slate'] {
+  --manuscript-gold:       215 32% 44%;
+  --manuscript-gold-soft:  215 22% 64%;
+  --manuscript-vermilion:  220 50% 30%;
+}
+
+/* Dark mode: shift paper darker, gold/vermilion slightly brighter for contrast */
+.dark {
+  --manuscript-ivory:      38 15% 12%;
+  --manuscript-ivory-deep: 35 15% 16%;
+  --manuscript-brown:      38 25% 88%;
+  --manuscript-brown-soft: 38 15% 65%;
+}

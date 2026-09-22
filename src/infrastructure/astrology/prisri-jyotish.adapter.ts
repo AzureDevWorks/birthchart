@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { getKundli, Observer, getChalitChart, getPanchangamDetails } from '@prisri/jyotish';
 import type { Kundli, KundliConfig } from '@prisri/jyotish';
 import type { BirthData } from '@/domain/astrology/birth-data';
-import type { JyotishPort } from '@/domain/astrology/port';
+import type { JyotishPort, ChalitChartData, ChalitMethod, PanchangamData } from '@/domain/astrology/port';
 
 const DEFAULT_CONFIG: KundliConfig = {
   ayanamsa: 'lahiri',
@@ -23,9 +23,6 @@ export class BirthDataError extends Error {
 
 export const prisriJyotish: JyotishPort = {
   calculate(data, config = DEFAULT_CONFIG): Kundli {
-    // Build the exact instant the library expects.
-    // Example: localDate="1995-05-15", localTime="14:30", tz="Asia/Kolkata"
-    //   ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ dt.toJSDate() = new Date('1995-05-15T14:30:00+05:30')
     const dt = DateTime.fromISO(`${data.localDate}T${data.localTime}`, {
       zone: data.place.timezone,
     });
@@ -36,6 +33,15 @@ export const prisriJyotish: JyotishPort = {
 
     const observer = new Observer(data.place.lat, data.place.lon, 0);
     return getKundli(dt.toJSDate(), observer, config);
+  },
+
+  getChalit(kundli: Kundli, method: ChalitMethod): ChalitChartData {
+    return (getChalitChart as any)(kundli, method) as ChalitChartData;
+  },
+
+  getPanchangam(date: Date, lat: number, lon: number): PanchangamData {
+    const observer = new Observer(lat, lon, 0);
+    return (getPanchangamDetails as any)(date, observer) as PanchangamData;
   },
 };
 

@@ -1,8 +1,19 @@
-﻿import NepaliDate from 'nepali-date-converter';
+import NepaliDate from 'nepali-date-converter';
 
+// Baishakh ... Chaitra, in Devanagari.
 export const NEPALI_MONTHS = [
-  'बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज',
-  'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फाल्गुन', 'चैत',
+  '\u092C\u0948\u0936\u093E\u0916',
+  '\u091C\u0947\u0920',
+  '\u0905\u0938\u093E\u0930',
+  '\u0938\u093E\u0909\u0928',
+  '\u092D\u0926\u094C',
+  '\u0905\u0938\u094B\u091C',
+  '\u0915\u093E\u0924\u094D\u0924\u093F\u0915',
+  '\u092E\u0902\u0938\u093F\u0930',
+  '\u092A\u0941\u0937',
+  '\u092E\u093E\u0918',
+  '\u092B\u093E\u0932\u094D\u0917\u0941\u0928',
+  '\u091A\u0948\u0924',
 ] as const;
 
 export const NEPALI_MONTHS_EN = [
@@ -10,14 +21,17 @@ export const NEPALI_MONTHS_EN = [
   'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra',
 ] as const;
 
-const DEVANAGARI_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+const DEVANAGARI_DIGITS = [
+  '\u0966','\u0967','\u0968','\u0969','\u096A',
+  '\u096B','\u096C','\u096D','\u096E','\u096F',
+];
 
 export function toDevanagari(num: number | string): string {
   return String(num).replace(/\d/g, (d) => DEVANAGARI_DIGITS[Number(d)]);
 }
 
 export function toArabicNumerals(str: string): string {
-  return str.replace(/[०-९]/g, (d) => String(DEVANAGARI_DIGITS.indexOf(d)));
+  return str.replace(/[\u0966-\u096F]/g, (d) => String(DEVANAGARI_DIGITS.indexOf(d)));
 }
 
 export const BS_MIN_YEAR = 1975;
@@ -33,7 +47,6 @@ export function toGregorianISO(bs: BSDate): string | null {
   try {
     const d = new NepaliDate(bs.year, bs.month, bs.day);
     const js = d.toJsDate();
-    // Use local getters, not toISOString(), to avoid UTC shifts
     const yyyy = js.getFullYear();
     const mm = String(js.getMonth() + 1).padStart(2, '0');
     const dd = String(js.getDate()).padStart(2, '0');
@@ -47,7 +60,6 @@ export function fromGregorianISO(iso: string): BSDate | null {
   try {
     const [y, m, d] = iso.split('-').map(Number);
     if (!y || !m || !d) return null;
-    // Construct in local time to avoid UTC offsets
     const localDate = new Date(y, m - 1, d);
     const nep = new NepaliDate(localDate);
     return {
@@ -62,7 +74,6 @@ export function fromGregorianISO(iso: string): BSDate | null {
 
 export function daysInBsMonth(year: number, month: number): number {
   try {
-    // Try days 32 down to 29 until valid
     for (let d = 32; d >= 29; d--) {
       try {
         new NepaliDate(year, month, d);
@@ -77,7 +88,10 @@ export function daysInBsMonth(year: number, month: number): number {
   }
 }
 
-export function formatBS(bs: BSDate, options: { devanagari?: boolean; monthNames?: readonly string[] } = {}): string {
+export function formatBS(
+  bs: BSDate,
+  options: { devanagari?: boolean; monthNames?: readonly string[] } = {}
+): string {
   const { devanagari = true, monthNames = NEPALI_MONTHS } = options;
   const yStr = devanagari ? toDevanagari(bs.year) : String(bs.year);
   const dStr = devanagari ? toDevanagari(bs.day) : String(bs.day);

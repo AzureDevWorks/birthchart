@@ -1,4 +1,4 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{ts,tsx}'],
@@ -18,6 +18,17 @@ export default {
         accent: { DEFAULT: 'hsl(var(--accent))', foreground: 'hsl(var(--accent-foreground))' },
         popover: { DEFAULT: 'hsl(var(--popover))', foreground: 'hsl(var(--popover-foreground))' },
         card: { DEFAULT: 'hsl(var(--card))', foreground: 'hsl(var(--card-foreground))' },
+
+        // Manuscript — palette-aware
+        manuscript: {
+          ivory:       'hsl(var(--manuscript-ivory))',
+          'ivory-deep':'hsl(var(--manuscript-ivory-deep))',
+          brown:       'hsl(var(--manuscript-brown))',
+          'brown-soft':'hsl(var(--manuscript-brown-soft))',
+          gold:        'hsl(var(--manuscript-gold))',
+          'gold-soft': 'hsl(var(--manuscript-gold-soft))',
+          vermilion:   'hsl(var(--manuscript-vermilion))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

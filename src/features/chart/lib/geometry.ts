@@ -1,4 +1,4 @@
-﻿export interface Point {
+export interface Point {
   x: number;
   y: number;
 }
@@ -6,34 +6,56 @@
 export type ChartStyle = 'north' | 'south';
 
 // ─── North Indian chart vertices ────────────────────────────
+// Outer square corners
 const TL: Point = { x: 0,   y: 0 };
-const T:  Point = { x: 0.5, y: 0 };
 const TR: Point = { x: 1,   y: 0 };
-const R:  Point = { x: 1,   y: 0.5 };
 const BR: Point = { x: 1,   y: 1 };
-const B:  Point = { x: 0.5, y: 1 };
 const BL: Point = { x: 0,   y: 1 };
+
+// Side midpoints (used as diamond vertices)
+const T:  Point = { x: 0.5, y: 0 };
+const R:  Point = { x: 1,   y: 0.5 };
+const B:  Point = { x: 0.5, y: 1 };
 const L:  Point = { x: 0,   y: 0.5 };
+
+// Center
 const C:  Point = { x: 0.5, y: 0.5 };
 
+// Interior points where the two square diagonals cross the diamond edges
 const D1: Point = { x: 0.25, y: 0.25 };
 const D2: Point = { x: 0.75, y: 0.25 };
 const D3: Point = { x: 0.75, y: 0.75 };
 const D4: Point = { x: 0.25, y: 0.75 };
 
+// ─── The 12 North Indian houses ─────────────────────────────
+// Layout: 4 diamond quads + 8 corner triangles.
+//
+// Houses 1, 4, 7, 10 are the four quadrilateral regions of the
+// inner diamond (each touches the center).
+//
+// Houses 2, 3, 5, 6, 8, 9, 11, 12 are the eight triangular
+// corner houses (two per corner of the outer square, split by
+// the corner-to-corner diagonals).
+
 export const NORTH_HOUSE_POLYGONS: Record<number, Point[]> = {
-  1:  [T, D2, C, D1],
-  2:  [TL, T, D1],
-  3:  [TL, D1, L],
-  4:  [L, D1, C],
-  5:  [L, C, D4],
-  6:  [BL, L, D4],
-  7:  [BL, D4, B],
-  8:  [B, D4, C, D3],
-  9:  [B, D3, BR],
-  10: [BR, D3, R],
-  11: [R, D3, C],
-  12: [R, C, D2],
+  // --- Diamond quads ---
+  1:  [T, D2, C, D1],       // top of diamond
+  4:  [D1, C, D4, L],       // left of diamond
+  7:  [C, D3, B, D4],       // bottom of diamond
+  10: [D2, R, D3, C],       // right of diamond
+
+  // --- Corner triangles ---
+  2:  [TL, T, D1],          // top-left upper
+  3:  [TL, D1, L],          // top-left lower
+
+  5:  [L, D4, BL],          // bottom-left upper
+  6:  [BL, D4, B],          // bottom-left lower
+
+  8:  [BR, D3, B],          // bottom-right lower
+  9:  [R, D3, BR],          // bottom-right upper
+
+  11: [R, D2, TR],          // top-right lower
+  12: [TR, D2, T],          // top-right upper
 };
 
 export const SOUTH_HOUSE_GRID: Record<number, { row: number; col: number }> = {
@@ -133,10 +155,6 @@ export function getSouthInnerCells(size: number) {
   ];
 }
 
-/**
- * Generate sunburst rays emanating from the center.
- * Returns an array of {x1, y1, x2, y2} line coordinates.
- */
 export function getSunburstRays(
   size: number,
   centerX: number,

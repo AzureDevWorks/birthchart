@@ -49,3 +49,10 @@ coverage/
 
 # TypeScript build info
 *.tsbuildinfo
+# Cleanup backups
+.cleanup-backup-*/
+.cleanup-backup-path.txt
+
+
+# Dev artifacts — keep scripts and outputs, ignore backup snapshots
+dev/backups/

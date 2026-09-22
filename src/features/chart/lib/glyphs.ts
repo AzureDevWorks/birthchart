@@ -1,4 +1,4 @@
-﻿import type { PlanetKey } from '../primitives/GlyphBadge';
+import type { PlanetKey } from '@/features/report/primitives/GlyphBadge';
 
 // ─── English abbreviations ─────────────────────────────────
 export const PLANET_GLYPHS_EN: Record<string, string> = {

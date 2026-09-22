@@ -15,8 +15,6 @@ import { BirthDateField } from './BirthDateField';
 import { PlacePreview } from './PlacePreview';
 import type { Place } from '@/domain/geo/place';
 
-const TODAY = new Date().toISOString().slice(0, 10);
-
 export function BirthProfileForm() {
   const { t } = useTranslation();
   const addProfile = useBirthStore((s) => s.addProfile);

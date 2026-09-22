@@ -1,4 +1,4 @@
-﻿import { useMemo, useId } from 'react';
+import { useMemo, useId } from 'react';
 import {
   getHousePolygon,
   getHouseCentroid,
@@ -70,7 +70,7 @@ export function BaseChart({ style, size, houses, lang = 'en' }: BaseChartProps) 
 
   const houseNumDisplay = (n: number) =>
     lang === 'ne' || lang === 'hi'
-      ? String(n).replace(/\d/g, (d) => '०१२३४५६७८९'[Number(d)])
+      ? String(n).replace(/\d/g, (d) => '\u0966\u0967\u0968\u0969\u096A\u096B\u096C\u096D\u096E\u096F'[Number(d)])
       : String(n);
 
   const frameGradId = `sacred-frame-${uid}`;
@@ -274,7 +274,6 @@ export function BaseChart({ style, size, houses, lang = 'en' }: BaseChartProps) 
  * Planets group in rows of up to 3, columns adjust.
  */
 function HouseContents({
-  house,
   center,
   size,
   planets,
@@ -348,9 +347,7 @@ function HouseContents({
           >
             {p.abbr}
             {p.isRetrograde && (
-              <tspan fontSize={degFontSize} fill={CHART_THEME.retrogradeColor} dx={0.5} dy={-2}>
-                ʳ
-              </tspan>
+              <tspan fontSize={degFontSize} fill={CHART_THEME.retrogradeColor} dx={0.5} dy={-2}>R</tspan>
             )}
           </text>
         );

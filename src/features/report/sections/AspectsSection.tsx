@@ -1,9 +1,8 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PLANET_GLYPHS } from '../lib/glyphs';
 import {
   ASPECT_RULES,
-  ASPECT_TYPE_LABEL,
   ASPECT_TYPE_MEANING,
 } from '../lib/aspect-info';
 
@@ -15,14 +14,6 @@ const PLANET_ORDER = [
   'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter',
   'Venus', 'Saturn', 'Rahu', 'Ketu',
 ];
-
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
-
-const HOUSE_NAMES: Record<number, string> = {
-  1: 'Self', 2: 'Wealth', 3: 'Siblings', 4: 'Home',
-  5: 'Children', 6: 'Enemies', 7: 'Marriage', 8: 'Transform',
-  9: 'Fortune', 10: 'Career', 11: 'Gains', 12: 'Loss',
-};
 
 export function AspectsSection({ kundli }: AspectsSectionProps) {
   const { t } = useTranslation();
