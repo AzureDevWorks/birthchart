@@ -1,0 +1,148 @@
+{
+    "app":  {
+                "name":  "कुण्डलीयात्रा",
+                "tagline":  "तपाईंको वैदिक जन्म कुण्डली, स्पष्ट रूपमा।",
+                "print":  "प्रिन्ट गर्नुहोस्"
+            },
+    "common":  {
+                   "change":  "परिवर्तन",
+                   "reset":  "रिसेट",
+                   "loading":  "लोड हुँदैछ...",
+                   "searching":  "खोज्दैछ...",
+                   "noResults":  "\"{{query}}\" सँग मिल्ने शहर भेटिएन।",
+                   "searchFailed":  "खोज असफल। कृपया पुनः प्रयास गर्नुहोस्।"
+               },
+    "birth":  {
+                  "title":  "जन्म विवरण",
+                  "subtitle":  "समय जन्म शहरको समय क्षेत्रमा लिइनेछ।",
+                  "name":  "नाम",
+                  "namePlaceholder":  "जस्तै बिकाश मोक्तान",
+                  "date":  "जन्म मिति",
+                  "time":  "जन्म समय",
+                  "city":  "जन्म शहर",
+                  "cityPlaceholder":  "शहरको नाम लेख्नुहोस्...",
+                  "submit":  "कुण्डली हेर्नुहोस्",
+                  "interpretedAs":  "यस रूपमा व्याख्या",
+                  "errors":  {
+                                 "nameRequired":  "कृपया नाम लेख्नुहोस्।",
+                                 "nameTooLong":  "नाम धेरै लामो छ (अधिकतम 100 अक्षर)।",
+                                 "dateRequired":  "कृपया जन्म मिति लेख्नुहोस्।",
+                                 "dateTooEarly":  "जन्म वर्ष 1900 वा पछिको हुनुपर्छ।",
+                                 "dateFuture":  "जन्म मिति भविष्यमा हुन सक्दैन।",
+                                 "timeRequired":  "कृपया जन्म समय लेख्नुहोस्।",
+                                 "placeRequired":  "कृपया जन्म शहर छान्नुहोस्।",
+                                 "invalidDateTime":  "त्यो मिति/समय {{timezone}} मा मान्य छैन।"
+                             },
+                  "calendarBS":  "वि.सं.",
+                  "calendarAD":  "ई.सं.",
+                  "approximateAD":  "≈ {{ad}} (ई.सं.)",
+                  "approximateBS":  "≈ वि.सं. {{bs}}"
+              },
+    "dashboard":  {
+                      "title":  "कुण्डलीयात्रा ड्यासबोर्ड",
+                      "changeDetails":  "जन्म विवरण परिवर्तन",
+                      "ascendant":  "लग्न",
+                      "sign":  "राशि",
+                      "lord":  "स्वामी",
+                      "degree":  "अंश",
+                      "nakshatra":  "नक्षत्र",
+                      "planets":  "ग्रह स्थितिहरू",
+                      "failed":  "कुण्डली गणना असफल।"
+                  },
+    "settings":  {
+                     "language":  "भाषा",
+                     "palette":  "रङ प्यालेट",
+                     "light":  "उज्यालो",
+                     "dark":  "अँध्यारो",
+                     "system":  "सिस्टम"
+                 },
+    "chart":  {
+                  "title":  "जन्म कुण्डली (D1)",
+                  "styleNorth":  "उत्तर भारतीय",
+                  "styleSouth":  "दक्षिण भारतीय",
+                  "planetAbbr":  {
+                                     "ascendant":  "ल",
+                                     "sun":  "सू",
+                                     "moon":  "चं",
+                                     "mars":  "मं",
+                                     "mercury":  "बु",
+                                     "jupiter":  "गु",
+                                     "venus":  "शु",
+                                     "saturn":  "श",
+                                     "rahu":  "रा",
+                                     "ketu":  "के"
+                                 }
+              },
+    "cover":  {
+                  "birthNakshatra":  "जन्म नक्षत्र",
+                  "currentPeriod":  "वर्तमान अवधि",
+                  "dasha":  "वर्तमान दशा",
+                  "surya":  "सूर्य",
+                  "chandra":  "चन्द्र",
+                  "lagna":  "लग्न",
+                  "strongestHouse":  "सबैभन्दा बलियो भाव",
+                  "reading":  "वैदिक जन्म कुण्डली",
+                  "change":  "जन्म विवरण परिवर्तन"
+              },
+    "hero":  {
+                 "yourRashi":  "Your Rashi",
+                 "reading":  "A Vedic Reading",
+                 "panchangTitle":  "Panchangam at Birth",
+                 "tithi":  "Tithi",
+                 "chandraRashi":  "Chandra Rashi",
+                 "lagnaRashi":  "Lagna",
+                 "change":  "Change Birth Details",
+                 "chandraSub":  "Moon Sign · Mind",
+                 "lagnaSub":  "Ascendant · Body",
+                 "suryaRashi":  "Surya Rashi",
+                 "dasha":  "Current Mahadasha",
+                 "vara":  "Vara",
+                 "suryaSub":  "Sun Sign · Soul",
+                 "nakshatra":  "Birth Nakshatra"
+             },
+    "nav":  {
+                "chart":  "कुण्डली",
+                "panchang":  "पञ्चाङ्ग"
+            },
+    "panchang":  {
+                     "title":  "दैनिक पञ्चाङ्ग",
+                     "eyebrow":  "वैदिक पञ्चाङ्ग",
+                     "failed":  "पञ्चाङ्ग गणना असफल।",
+                     "resetToProfile":  "प्रोफाइल स्थानमा फर्कनुहोस्",
+                     "now":  "अहिले",
+                     "sunEyebrow":  "सूर्य",
+                     "sunTitle":  "सूर्योदय र सूर्यास्त",
+                     "sunrise":  "सूर्योदय",
+                     "sunset":  "सूर्यास्त",
+                     "limbsEyebrow":  "पाँच अङ्ग",
+                     "limbsTitle":  "पञ्चाङ्ग",
+                     "limbsHint":  "तिथि, नक्षत्र, योग, करण र वार — वैदिक दिनका पाँच अङ्ग।",
+                     "limbs":  {
+                                   "tithi":  "तिथि",
+                                   "nakshatra":  "नक्षत्र",
+                                   "yoga":  "योग",
+                                   "karana":  "करण",
+                                   "vara":  "वार"
+                               },
+                     "muhurtaEyebrow":  "मुहूर्त",
+                     "muhurtaTitle":  "शुभ समय",
+                     "muhurtaHint":  "ब्रह्म मुहूर्त र अभिजित शुभ कार्यका लागि; राहु कालबाट बच्नुहोस्।",
+                     "brahmaMuhurta":  "ब्रह्म मुहूर्त",
+                     "abhijitMuhurta":  "अभिजित मुहूर्त",
+                     "rahuKalam":  "राहु काल",
+                     "brahmaHint":  "शुभ · प्रातःकाल",
+                     "abhijitHint":  "शुभ · मध्याह्न",
+                     "rahuHint":  "अशुभ · टाढा रहनुहोस्",
+                     "choghadiyaEyebrow":  "चौघडिया",
+                     "choghadiyaTitle":  "दिन र रातका खण्डहरू",
+                     "choghadiyaHint":  "दिन र रातका आठ समान खण्डहरू। हरियो शुभ, रातो अशुभ।",
+                     "dayChoghadiya":  "दिन चौघडिया",
+                     "nightChoghadiya":  "रात चौघडिया",
+                     "noChoghadiya":  "चौघडिया डेटा उपलब्ध छैन।",
+                     "horaEyebrow":  "होरा",
+                     "horaTitleSection":  "ग्रह होरा",
+                     "horaTitle":  "होरा (दिन)",
+                     "horaHint":  "सूर्योदयदेखि सूर्यास्तसम्म बाह्र ग्रह-होरा।",
+                     "noHora":  "होरा डेटा उपलब्ध छैन।"
+                 }
+}
