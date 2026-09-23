@@ -56,3 +56,27 @@ coverage/
 
 # Dev artifacts — keep scripts and outputs, ignore backup snapshots
 dev/backups/
+
+# Generated AI scan outputs — never commit
+srcscanresult.md
+AI-CONTEXT-SCAN.md
+AI-CONTEXT.md
+AI-CONTEXT.md.tmp
+
+# Backup folders from past fix scripts
+.fix-backup/
+.tsc-fix-backup-*/
+*.bak
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
