@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
 import hi from './locales/hi.json';
 import ne from './locales/ne.json';
+import './locales/_check';
 
 export const SUPPORTED_LANGS = ['en', 'hi', 'ne'] as const;
 export type SupportedLang = (typeof SUPPORTED_LANGS)[number];
@@ -23,7 +24,6 @@ i18n
       hi: { translation: hi },
       ne: { translation: ne },
     },
-    lng: 'en',
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LANGS as unknown as string[],
     interpolation: { escapeValue: false },
