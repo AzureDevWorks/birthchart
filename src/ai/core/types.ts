@@ -51,6 +51,12 @@ export interface SectionSpec {
   render?: 'prose' | 'verse' | 'blessing';
 }
 
+export interface SituationDefaults {
+  tone?: string;
+  language?: Language;
+  length?: number;
+}
+
 export interface SituationDef {
   id: string;
   kind: SituationKind;
@@ -61,6 +67,7 @@ export interface SituationDef {
   format?: string;
   sections?: SectionSpec[];
   outputSchema?: string;
+  defaults?: SituationDefaults;
 }
 
 export interface ChangelogEntry {

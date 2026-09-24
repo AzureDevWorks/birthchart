@@ -26,6 +26,7 @@ export interface ExecuteOptions {
   language?: Language;
   sources: SelectorSources;
   extras?: Record<string, unknown>;
+  signal?: AbortSignal;
 }
 
 export interface ExecutionResult {
@@ -54,6 +55,7 @@ export async function execute(
     order: snapshot.providerOrder,
     configs: snapshot.providers,
     extras: opts.extras as any,
+    signal: opts.signal,
   });
 
   const modelId = res.providerId

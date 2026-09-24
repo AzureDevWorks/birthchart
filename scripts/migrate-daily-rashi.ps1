@@ -1,3 +1,109 @@
+# scripts/migrate-daily-rashi.ps1
+# Rewires useDailyRashi to the ai-v2 runtime and deletes the legacy
+# daily-rashi-prompt.ts. Also adds signal support to execute.ts.
+# Safe to re-run (idempotent overwrite).
+
+$ErrorActionPreference = 'Stop'
+
+function Write-Utf8 {
+    param([string]$Path, [string]$Content)
+    $dir = Split-Path -Parent $Path
+    if ($dir -and -not (Test-Path $dir)) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+    }
+    $abs = Join-Path (Get-Location) $Path
+    $enc = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($abs, $Content, $enc)
+    Write-Host "  wrote $Path" -ForegroundColor Green
+}
+
+Write-Host "`nMigrating daily-rashi to ai-v2...`n" -ForegroundColor Cyan
+
+# ══════════════════════════════════════════════════════════════
+# 1. Patch execute.ts to accept an AbortSignal
+# ══════════════════════════════════════════════════════════════
+$executeTs = @'
+/**
+ * Orchestrates one AI call.
+ *
+ *   1. resolve situation -> (pack, situation)
+ *   2. select data       -> only the blocks the situation asked for
+ *   3. compose prompt    -> the six layers
+ *   4. call the AI       -> through the existing fallback chain
+ *   5. return everything -> prompt, text, provenance
+ *
+ * The composed prompt is returned so callers can store it alongside
+ * the output. That is how a reading stays reproducible even after the
+ * pack is edited.
+ */
+import type { Language } from '../core/types';
+import { compose } from '../core/composer';
+import { resolve } from '../core/registry';
+import { select, type SelectorSources } from '../core/selector';
+import {
+  generateWithFallback,
+  type FallbackResult,
+} from '@/features/ai-settings/providers';
+import { getAiSettingsSnapshot } from '@/features/ai-settings/store';
+
+export interface ExecuteOptions {
+  situationId: string;
+  language?: Language;
+  sources: SelectorSources;
+  extras?: Record<string, unknown>;
+  signal?: AbortSignal;
+}
+
+export interface ExecutionResult {
+  ok: boolean;
+  text?: string;
+  error?: string;
+  attempts?: FallbackResult['attempts'];
+  composed: ReturnType<typeof compose>;
+  providerId?: string;
+  modelId?: string;
+}
+
+export async function execute(
+  opts: ExecuteOptions
+): Promise<ExecutionResult> {
+  const { pack, situation } = resolve(opts.situationId);
+  const language = opts.language ?? 'en';
+
+  const data = select(situation.data, opts.sources);
+  const composed = compose({ pack, situation, data, language });
+
+  const snapshot = getAiSettingsSnapshot();
+  const res = await generateWithFallback({
+    system: composed.system,
+    prompt: composed.user,
+    order: snapshot.providerOrder,
+    configs: snapshot.providers,
+    extras: opts.extras as any,
+    signal: opts.signal,
+  });
+
+  const modelId = res.providerId
+    ? snapshot.providers[res.providerId]?.preferredModel
+    : undefined;
+
+  return {
+    ok: res.ok,
+    text: res.text,
+    error: res.error,
+    attempts: res.attempts,
+    composed,
+    providerId: res.providerId,
+    modelId,
+  };
+}
+'@
+Write-Utf8 'src/ai/runtime/execute.ts' $executeTs
+
+# ══════════════════════════════════════════════════════════════
+# 2. Rewrite useDailyRashi.ts to use the runtime
+# ══════════════════════════════════════════════════════════════
+$useDailyRashiTs = @'
 import { useEffect, useRef, useState } from 'react';
 import { DateTime } from 'luxon';
 import type { BirthData } from '@/domain/astrology/birth-data';
@@ -87,7 +193,7 @@ export function useDailyRashi(
       return;
     }
     if (fresh) {
-      log('stale cache (v' + fresh.promptVersion + ') â€” regenerating');
+      log('stale cache (v' + fresh.promptVersion + ') — regenerating');
     }
 
     if (inFlight.has(cacheKey)) {
@@ -108,7 +214,7 @@ export function useDailyRashi(
 
     const k = kundliRef.current;
     if (!k) {
-      log('no kundli â€” waiting');
+      log('no kundli — waiting');
       return;
     }
 
@@ -216,3 +322,27 @@ export function useDailyRashi(
 
   return { state, record, error, regenerate };
 }
+'@
+Write-Utf8 'src/features/dashboard/hooks/useDailyRashi.ts' $useDailyRashiTs
+
+# ══════════════════════════════════════════════════════════════
+# 3. Delete the legacy prompt module
+# ══════════════════════════════════════════════════════════════
+$legacy = 'src/features/dashboard/lib/daily-rashi-prompt.ts'
+if (Test-Path $legacy) {
+    Remove-Item $legacy -Force
+    Write-Host "  deleted $legacy" -ForegroundColor Yellow
+} else {
+    Write-Host "  $legacy already gone" -ForegroundColor DarkGray
+}
+
+Write-Host "`nDone." -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Next:" -ForegroundColor Yellow
+Write-Host "  1. npm run build"
+Write-Host "  2. npm run dev   and open http://localhost:5173/"
+Write-Host "     the daily rashi tile must still appear"
+Write-Host "  3. If both pass, commit:"
+Write-Host "     git add -A"
+Write-Host "     git commit -m 'migrate daily-rashi to ai-v2 runtime'"
+Write-Host ""
