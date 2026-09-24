@@ -1,4 +1,4 @@
-﻿export function OrnamentalDivider({ className }: { className?: string }) {
+export function OrnamentalDivider({ className }: { className?: string }) {
   return (
     <div
       className={`flex items-center justify-center gap-3 my-10 select-none ${className ?? ''}`}
@@ -14,7 +14,7 @@
         className="text-primary/50"
         style={{ fontSize: '11px', lineHeight: 1 }}
       >
-        ✦
+        ?
       </span>
       <span
         className="h-px flex-1 max-w-[200px]"

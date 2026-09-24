@@ -1,4 +1,4 @@
-﻿import { BaseChart } from './BaseChart';
+import { BaseChart } from './BaseChart';
 import { ChartStyleToggle } from './ChartStyleToggle';
 import { useChartStyleStore } from '../lib/useChartStyle';
 import { useTranslation } from 'react-i18next';

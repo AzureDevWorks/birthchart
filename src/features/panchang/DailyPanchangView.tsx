@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Section } from '@/features/report/primitives/Section';
 import { OrnamentalDivider } from '@/features/report/primitives/OrnamentalDivider';
 import { PlaceCombobox } from '@/features/birth-profile/components/PlaceCombobox';
-import { useActiveProfile } from '@/features/birth-profile/store';
 import {
   calculateNowPanchang,
   PanchangError,
@@ -17,27 +16,19 @@ import {
   IconPin,
 } from '@/components/icons';
 import type { Place } from '@/domain/geo/place';
+import { useUserLocation } from '@/lib/use-user-location';
 
 // ─── Fallback place when there's no active profile ──────────
-const DEFAULT_PLACE: Place = {
-  id: 'default:kathmandu',
-  label: 'Kathmandu, Nepal',
-  shortLabel: 'Kathmandu',
-  lat: 27.7172,
-  lon: 85.324,
-  timezone: 'Asia/Kathmandu',
-  countryCode: 'np',
-  admin1: 'Bagmati',
-  placeType: 'city',
-};
+// Auto-detected on load — see src/lib/user-location.ts
+// Reactive current location — falls back to auto-detect.
 
-export function DailyPanchangContent() {
+export function DailyPanchangContent() {  const userLocation = useUserLocation();
+
   const { t } = useTranslation();
-  const profile = useActiveProfile();
   const [override, setOverride] = useState<Place | null>(null);
   const [changing, setChanging] = useState(false);
 
-  const place: Place = override ?? profile?.place ?? DEFAULT_PLACE;
+  const place: Place = override ?? userLocation;
 
   const { panchang, error } = useMemo(() => {
     try {

@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    PRINT STYLESHEET — KundaliYatra
    Turns the report into a beautiful A4 document.
    Every rule is scoped to @media print, so screen is unaffected.
@@ -281,6 +281,36 @@
   th {
     background: hsl(38 40% 92%) !important;
     font-weight: 600 !important;
+  }
+
+  /* ─── Devanagari-capable fonts for print (added by fix-fonts.ps1) ── */
+  body, p, span, div, td, th, li, h1, h2, h3, h4, h5, h6 {
+    font-family:
+      'Noto Serif Devanagari',
+      'Nirmala UI',
+      'Mangal',
+      'Devanagari Sangam MN',
+      serif !important;
+  }
+  .font-dev-display,
+  .font-sanskrit,
+  .patrika-shloka,
+  .patrika-section-title,
+  .patrika-ledger-label,
+  .patrika-ledger-value {
+    font-family:
+      'Tiro Devanagari Sanskrit',
+      'Noto Serif Devanagari',
+      'Nirmala UI',
+      'Mangal',
+      serif !important;
+  }
+  .font-dev-sans {
+    font-family:
+      'Noto Sans Devanagari',
+      'Nirmala UI',
+      'Mangal',
+      sans-serif !important;
   }
 }
 

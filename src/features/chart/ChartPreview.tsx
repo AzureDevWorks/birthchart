@@ -1,4 +1,4 @@
-﻿import { VedicChart } from './components/VedicChart';
+import { VedicChart } from './components/VedicChart';
 
 export function ChartPreview() {
   return (

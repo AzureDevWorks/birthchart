@@ -1,4 +1,4 @@
-﻿import type { Kundli, KundliConfig } from '@prisri/jyotish';
+import type { Kundli, KundliConfig } from '@prisri/jyotish';
 import type { BirthData } from './birth-data';
 
 export interface ChalitPlanet {

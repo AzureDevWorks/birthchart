@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════════════════════
+   KundaliYatra — self-hosted fonts (offline, no CDN)
+   Files live in /public/fonts/ → served as /fonts/*.ttf
+   Same files reused by @react-pdf via /fonts/*.ttf
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Devanagari ─────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Noto Serif Devanagari';
+  src: url('/fonts/NotoSerifDevanagari-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Serif Devanagari';
+  src: url('/fonts/NotoSerifDevanagari-Bold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Devanagari';
+  src: url('/fonts/NotoSansDevanagari-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Devanagari';
+  src: url('/fonts/NotoSansDevanagari-Bold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  src: url('/fonts/TiroDevanagariSanskrit-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  src: url('/fonts/TiroDevanagariSanskrit-Italic.ttf') format('truetype');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+
+/* ── Latin ─────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Bold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Crimson Pro';
+  src: url('/fonts/CrimsonPro-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}

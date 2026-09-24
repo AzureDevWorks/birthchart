@@ -1,4 +1,4 @@
-﻿import tzlookup from 'tz-lookup';
+import tzlookup from 'tz-lookup';
 import { isValidTimezone } from '@/domain/geo/place';
 
 export interface TzResolution {

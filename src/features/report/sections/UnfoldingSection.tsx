@@ -1,4 +1,4 @@
-﻿import { GlyphBadge } from '../primitives/GlyphBadge';
+import { GlyphBadge } from '../primitives/GlyphBadge';
 import { PLANET_GLYPHS } from '../lib/glyphs';
 
 interface UnfoldingSectionProps {

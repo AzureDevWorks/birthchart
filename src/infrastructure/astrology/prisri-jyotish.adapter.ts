@@ -1,5 +1,14 @@
 import { DateTime } from 'luxon';
-import { getKundli, Observer, getChalitChart, getPanchangamDetails } from '@prisri/jyotish';
+import {
+  getKundli,
+  Observer,
+  getChalitChart,
+  getPanchangamDetails,
+  getGhatikaChart,
+  getHoraLagnaChart,
+  getBhavaLagnaChart,
+  getInduLagnaChart,
+} from '@prisri/jyotish';
 import type { Kundli, KundliConfig } from '@prisri/jyotish';
 import type { BirthData } from '@/domain/astrology/birth-data';
 import type { JyotishPort, ChalitChartData, ChalitMethod, PanchangamData } from '@/domain/astrology/port';
@@ -58,5 +67,37 @@ export function previewBirthInstant(data: BirthData): {
     iso: dt.toISO() ?? '',
     utc: dt.toUTC().toISO() ?? '',
     offset: dt.toFormat('ZZ'),
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Special (derived) charts
+// Each of these treats a specific special lagna as House 1 and re-places
+// every planet accordingly. Computed on-demand — cheap, but not part of
+// the default Kundli payload, so they are not touched until asked for.
+// ─────────────────────────────────────────────────────────────────────
+
+export interface SpecialChartsBundle {
+  ghatika: any | null;
+  hora:    any | null;
+  bhava:   any | null;
+  indu:    any | null;
+}
+
+function safeChart<T>(fn: () => T): T | null {
+  try {
+    const out = fn();
+    return out ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function getSpecialCharts(kundli: Kundli): SpecialChartsBundle {
+  return {
+    ghatika: safeChart(() => getGhatikaChart(kundli)),
+    hora:    safeChart(() => getHoraLagnaChart(kundli)),
+    bhava:   safeChart(() => getBhavaLagnaChart(kundli)),
+    indu:    safeChart(() => getInduLagnaChart(kundli)),
   };
 }

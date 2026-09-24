@@ -1,4 +1,4 @@
-﻿import { REPORT_TOKENS } from '../tokens';
+import { REPORT_TOKENS } from '../tokens';
 
 export type PlanetKey = keyof typeof REPORT_TOKENS.planetColors;
 

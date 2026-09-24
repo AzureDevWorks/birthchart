@@ -405,7 +405,7 @@ export function AshtakavargaSection({ kundli }: AshtakavargaSectionProps) {
           >
             {t('ashtakavarga.readingBody', {
               defaultValue:
-                'Each planet contributes bindus to each house — its willingness to support that house’s affairs. Read a column top-to-bottom: when several planets agree, the house gives materially. When they disagree, effort is required. The SAV row is the sum.',
+                "Each planet contributes bindus to each house — its willingness to support that house's affairs. Read a column top-to-bottom: when several planets agree, the house gives materially. When they disagree, effort is required. The SAV row is the sum.",
             })}
           </p>
         </div>

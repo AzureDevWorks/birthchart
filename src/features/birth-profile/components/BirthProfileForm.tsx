@@ -15,7 +15,12 @@ import { BirthDateField } from './BirthDateField';
 import { PlacePreview } from './PlacePreview';
 import type { Place } from '@/domain/geo/place';
 
-export function BirthProfileForm() {
+interface BirthProfileFormProps {
+  /** Called after a profile is added successfully. */
+  onSuccess?: (id: string) => void;
+}
+
+export function BirthProfileForm({ onSuccess }: BirthProfileFormProps = {}) {
   const { t } = useTranslation();
   const addProfile = useBirthStore((s) => s.addProfile);
   const [showPreview, setShowPreview] = useState(true);
@@ -37,14 +42,15 @@ export function BirthProfileForm() {
 
   const onSubmit = (values: BirthFormValues) => {
     if (!values.place) return;
-    addProfile({
+    const id = addProfile({
       profileName: values.profileName,
       localDate: values.localDate,
       localTime: values.localTime,
       place: values.place,
     });
     toast.success(`Chart for ${values.profileName} is ready.`);
-  };
+  onSuccess?.(id);
+};
 
   const translateError = (key?: string) =>
     key ? t(`birth.errors.${key}`) : undefined;

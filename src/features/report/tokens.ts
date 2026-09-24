@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Report design tokens.
  * Centralized so the whole report can be re-themed from one place.
  */

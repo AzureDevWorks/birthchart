@@ -1,4 +1,4 @@
-﻿export type ChartStyle = 'north' | 'south';
+export type ChartStyle = 'north' | 'south';
 
 export interface ChartHouse {
   number: number;

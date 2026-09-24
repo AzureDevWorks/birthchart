@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VedicChart } from '@/features/chart/components/VedicChart';
 import { buildChalitChartHouses } from '@/features/chart/lib/adapters';

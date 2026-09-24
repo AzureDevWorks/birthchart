@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Knowledge base for all 20 divisional charts (Vargas).
  * Each entry describes what the chart reveals and how it's used.
  */
@@ -16,11 +16,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d1: {
     code: 'D1',
     name: 'Rashi',
-    sanskrit: 'राशि',
+    sanskrit: '\u0930\u093E\u0936\u093F',
     division: '1 division',
     purpose: 'The Body',
     summary:
-      'The Rashi chart is the foundation of all Vedic astrology. Each sign is one house, showing the soul in physical form — the body, personality, and the life you walk in. Every other divisional chart is a lens on top of this base.',
+      'The Rashi chart is the foundation of all Vedic astrology. Each sign is one house, showing the soul in physical form - the body, personality, and the life you walk in. Every other divisional chart is a lens on top of this base.',
     useCases: [
       'Overall life direction',
       'Physical body and health',
@@ -31,11 +31,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d2: {
     code: 'D2',
     name: 'Hora',
-    sanskrit: 'होरा',
-    division: '2 divisions of 15°',
+    sanskrit: '\u0939\u094B\u0930\u093E',
+    division: '2 divisions of 15�',
     purpose: 'Wealth',
     summary:
-      'The Hora splits each sign into two halves — one ruled by the Sun, one by the Moon. It reveals the source and nature of wealth in a chart: whether it comes through self-effort (Sun) or through inheritance, care, and connection (Moon).',
+      'The Hora splits each sign into two halves - one ruled by the Sun, one by the Moon. It reveals the source and nature of wealth in a chart: whether it comes through self-effort (Sun) or through inheritance, care, and connection (Moon).',
     useCases: [
       'Source of wealth',
       'Financial patterns',
@@ -46,11 +46,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d3: {
     code: 'D3',
     name: 'Drekkana',
-    sanskrit: 'द्रेक्काण',
-    division: '3 divisions of 10°',
+    sanskrit: '\u0926\u094D\u0930\u0947\u0915\u094D\u0915\u093E\u0923',
+    division: '3 divisions of 10�',
     purpose: 'Siblings',
     summary:
-      'The Drekkana shows siblings, co-borns, and short journeys. It also reveals communication and immediate community — the people you grow up alongside.',
+      'The Drekkana shows siblings, co-borns, and short journeys. It also reveals communication and immediate community - the people you grow up alongside.',
     useCases: [
       'Siblings and cousins',
       'Neighborhood and locality',
@@ -61,11 +61,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d4: {
     code: 'D4',
     name: 'Chaturthamsa',
-    sanskrit: 'चतुर्थांश',
-    division: '4 divisions of 7°30′',
+    sanskrit: '\u091A\u0924\u0941\u0930\u094D\u0925\u093E\u0902\u0936',
+    division: '4 divisions of 7�30?',
     purpose: 'Property',
     summary:
-      'The Chaturthamsa reveals landed property, homes, and fixed assets. It shows what you own and where you settle — the physical and emotional foundations of life.',
+      'The Chaturthamsa reveals landed property, homes, and fixed assets. It shows what you own and where you settle - the physical and emotional foundations of life.',
     useCases: [
       'Real estate',
       'Home and land',
@@ -76,8 +76,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d5: {
     code: 'D5',
     name: 'Panchamsa',
-    sanskrit: 'पञ्चमांश',
-    division: '5 divisions of 6°',
+    sanskrit: '\u092A\u091E\u094D\u091A\u092E\u093E\u0902\u0936',
+    division: '5 divisions of 6�',
     purpose: 'Fame',
     summary:
       'The Panchamsa reveals fame, authority, and the capacity for influence. It is used in classical Jyotish to determine whether a native attains renown.',
@@ -90,8 +90,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d6: {
     code: 'D6',
     name: 'Shashthamsa',
-    sanskrit: 'षष्ठांश',
-    division: '6 divisions of 5°',
+    sanskrit: '\u0937\u0937\u094D\u0920\u093E\u0902\u0936',
+    division: '6 divisions of 5�',
     purpose: 'Health',
     summary:
       'The Shashthamsa is the health chart. It reveals physical vitality, disease proneness, and the specific areas of the body that need care.',
@@ -104,11 +104,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d7: {
     code: 'D7',
     name: 'Saptamsa',
-    sanskrit: 'सप्तांश',
-    division: '7 divisions of 4°17′',
+    sanskrit: '\u0938\u092A\u094D\u0924\u093E\u0902\u0936',
+    division: '7 divisions of 4�17?',
     purpose: 'Children',
     summary:
-      'The Saptamsa is the primary chart for progeny — whether children come, their nature, and the native\'s relationship with them.',
+      'The Saptamsa is the primary chart for progeny - whether children come, their nature, and the native\'s relationship with them.',
     useCases: [
       'Children and fertility',
       'Lineage and descendants',
@@ -118,11 +118,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d8: {
     code: 'D8',
     name: 'Ashtamsa',
-    sanskrit: 'अष्टांश',
-    division: '8 divisions of 3°45′',
+    sanskrit: '\u0905\u0937\u094D\u091F\u093E\u0902\u0936',
+    division: '8 divisions of 3�45?',
     purpose: 'Sudden Events',
     summary:
-      'The Ashtamsa reveals sudden events — accidents, scandals, litigation, and unexpected changes. A difficult but important chart for timing crises.',
+      'The Ashtamsa reveals sudden events - accidents, scandals, litigation, and unexpected changes. A difficult but important chart for timing crises.',
     useCases: [
       'Sudden gains or losses',
       'Accidents and injuries',
@@ -132,11 +132,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d9: {
     code: 'D9',
     name: 'Navamsha',
-    sanskrit: 'नवांश',
-    division: '9 divisions of 3°20′',
+    sanskrit: '\u0928\u0935\u093E\u0902\u0936',
+    division: '9 divisions of 3�20?',
     purpose: 'Marriage & Dharma',
     summary:
-      'The Navamsha is the most important divisional chart after the D1. It divides each sign into nine parts, revealing the soul\'s deeper purpose, the quality of marriage, and the true inner strength of every planet. A planet in the same sign in D1 and D9 is "Vargottama" — exceptionally strong.',
+      'The Navamsha is the most important divisional chart after the D1. It divides each sign into nine parts, revealing the soul\'s deeper purpose, the quality of marriage, and the true inner strength of every planet. A planet in the same sign in D1 and D9 is "Vargottama" - exceptionally strong.',
     useCases: [
       'Marriage and partnership',
       'Soul purpose and dharma',
@@ -147,8 +147,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d10: {
     code: 'D10',
     name: 'Dashamsha',
-    sanskrit: 'दशांश',
-    division: '10 divisions of 3°',
+    sanskrit: '\u0926\u0936\u093E\u0902\u0936',
+    division: '10 divisions of 3�',
     purpose: 'Career',
     summary:
       'The Dashamsha is the career chart. It reveals profession, public role, professional achievements, and how the native is seen in the outer world.',
@@ -162,8 +162,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d11: {
     code: 'D11',
     name: 'Rudramsa',
-    sanskrit: 'रुद्रांश',
-    division: '11 divisions of 2°43′',
+    sanskrit: '\u0930\u0941\u0926\u094D\u0930\u093E\u0902\u0936',
+    division: '11 divisions of 2�43?',
     purpose: 'Gains',
     summary:
       'The Rudramsa (or Ekadashamsha) reveals gains, income, and the fulfilment of desires. A rarer chart, studied for its insight into what the native truly gains in life.',
@@ -176,11 +176,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d12: {
     code: 'D12',
     name: 'Dwadashamsha',
-    sanskrit: 'द्वादशांश',
-    division: '12 divisions of 2°30′',
+    sanskrit: '\u0926\u094D\u0935\u093E\u0926\u0936\u093E\u0902\u0936',
+    division: '12 divisions of 2�30?',
     purpose: 'Parents',
     summary:
-      'The Dwadashamsha reveals the native\'s parents — their nature, influence, and the karmic inheritance from them.',
+      'The Dwadashamsha reveals the native\'s parents - their nature, influence, and the karmic inheritance from them.',
     useCases: [
       'Father and mother',
       'Ancestral karma',
@@ -190,8 +190,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d16: {
     code: 'D16',
     name: 'Shodashamsha',
-    sanskrit: 'षोडशांश',
-    division: '16 divisions of 1°52′',
+    sanskrit: '\u0937\u094B\u0921\u0936\u093E\u0902\u0936',
+    division: '16 divisions of 1�52?',
     purpose: 'Vehicles',
     summary:
       'The Shodashamsha reveals vehicles, conveyances, and general comforts. It also shows the source of happiness and pleasure in life.',
@@ -204,8 +204,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d20: {
     code: 'D20',
     name: 'Vimshamsha',
-    sanskrit: 'विंशांश',
-    division: '20 divisions of 1°30′',
+    sanskrit: '\u0935\u093F\u0902\u0936\u093E\u0902\u0936',
+    division: '20 divisions of 1�30?',
     purpose: 'Spirituality',
     summary:
       'The Vimshamsha is the spiritual chart. It reveals the native\'s path of devotion, meditation, and connection to the divine. An essential chart for those on the inner journey.',
@@ -219,8 +219,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d24: {
     code: 'D24',
     name: 'Siddhamsha',
-    sanskrit: 'सिद्धांश',
-    division: '24 divisions of 1°15′',
+    sanskrit: '\u0938\u093F\u0926\u094D\u0927\u093E\u0902\u0936',
+    division: '24 divisions of 1�15?',
     purpose: 'Education',
     summary:
       'The Siddhamsha (or Chaturvimshamsha) is the education chart. It reveals learning capacity, academic success, and the specific fields of knowledge the native excels in.',
@@ -234,8 +234,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d27: {
     code: 'D27',
     name: 'Bhamsha',
-    sanskrit: 'भांश',
-    division: '27 divisions of 1°07′',
+    sanskrit: '\u092D\u093E\u0902\u0936',
+    division: '27 divisions of 1�07?',
     purpose: 'Strengths',
     summary:
       'The Bhamsha (or Saptavimshamsha) reveals the native\'s general strengths, weaknesses, and stamina. It is used to check the overall vitality of the chart.',
@@ -248,8 +248,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d30: {
     code: 'D30',
     name: 'Trimshamsha',
-    sanskrit: 'त्रिंशांश',
-    division: '30 divisions of 1°',
+    sanskrit: '\u0924\u094D\u0930\u093F\u0902\u0936\u093E\u0902\u0936',
+    division: '30 divisions of 1�',
     purpose: 'Misfortunes',
     summary:
       'The Trimshamsha reveals misfortunes, evils, and the specific karmic challenges in life. A challenging but diagnostic chart.',
@@ -262,8 +262,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d40: {
     code: 'D40',
     name: 'Khavedamsha',
-    sanskrit: 'खवेदांश',
-    division: '40 divisions of 45′',
+    sanskrit: '\u0916\u0935\u0947\u0926\u093E\u0902\u0936',
+    division: '40 divisions of 45?',
     purpose: 'Maternal',
     summary:
       'The Khavedamsha reveals the influences of the mother\'s lineage and maternal karma.',
@@ -276,8 +276,8 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d45: {
     code: 'D45',
     name: 'Akshavedamsha',
-    sanskrit: 'अक्षवेदांश',
-    division: '45 divisions of 40′',
+    sanskrit: '\u0905\u0915\u094D\u0937\u0935\u0947\u0926\u093E\u0902\u0936',
+    division: '45 divisions of 40?',
     purpose: 'Paternal',
     summary:
       'The Akshavedamsha reveals the influences of the father\'s lineage and paternal karma.',
@@ -290,11 +290,11 @@ export const VARGA_INFO: Record<string, VargaInfo> = {
   d60: {
     code: 'D60',
     name: 'Shashtiamsha',
-    sanskrit: 'षष्ट्यंश',
-    division: '60 divisions of 30′',
+    sanskrit: '\u0937\u0937\u094D\u091F\u094D\u092F\u0902\u0936',
+    division: '60 divisions of 30?',
     purpose: 'Karma',
     summary:
-      'The Shashtiamsha is the most subtle divisional chart. It reveals the finest details of the native\'s karma — the specific past-life impressions that shape this life. Considered by many to be the most important chart after D1 and D9.',
+      'The Shashtiamsha is the most subtle divisional chart. It reveals the finest details of the native\'s karma - the specific past-life impressions that shape this life. Considered by many to be the most important chart after D1 and D9.',
     useCases: [
       'Past-life karma',
       'Deepest life tendencies',

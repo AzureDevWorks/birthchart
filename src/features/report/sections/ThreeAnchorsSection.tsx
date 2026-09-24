@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { GlyphBadge } from '../primitives/GlyphBadge';
-import { PLANET_GLYPHS, RASHI_GLYPHS, RASHI_LORDS } from '../lib/glyphs';
+import { RashiImage } from '../components/RashiImage';
+import { PLANET_GLYPHS, RASHI_LORDS } from '../lib/glyphs';
 import {
   RASHI_INTERPRETATIONS,
   NAKSHATRA_INTERPRETATIONS,
@@ -81,10 +81,12 @@ export function ThreeAnchorsSection({ kundli }: ThreeAnchorsSectionProps) {
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">{anchor.title}</p>
               </div>
-              <GlyphBadge
-                glyph={RASHI_GLYPHS[rashiName] ?? '·'}
-                planet={anchor.planetKey}
+              <RashiImage
+                rashi={rashiName}
                 size={44}
+                borderColor={`${anchor.borderColor}55`}
+                bgColor={`${anchor.borderColor}12`}
+                title={rashiName}
               />
             </div>
 

@@ -370,3 +370,79 @@ export function buildChalitChartHouses(
 
   return result;
 }
+
+/**
+ * Build ChartHouse[] for any of the special (derived) charts:
+ * Ghatika, Hora, Bhava, or Indu Lagna. These have the same shape as
+ * a varga — { ascendant, planets, houses } — so the logic mirrors
+ * buildFromHouses with a fallback for charts that omit `houses[]`.
+ */
+export function buildSpecialChartHouses(
+  chart: any,
+  options: BuildOptions
+): ChartHouse[] {
+  if (!chart) return [];
+
+  // Preferred path — the library gives us full houses[]
+  if (Array.isArray(chart.houses) && chart.houses.length > 0) {
+    return buildFromHouses(
+      chart.houses,
+      chart.planets ?? {},
+      chart.ascendant,
+      options
+    );
+  }
+
+  // Fallback — synthesize houses from each planet's rashi
+  const ascRashi: number =
+    typeof chart?.ascendant?.rashi === 'number' ? chart.ascendant.rashi : 1;
+
+  const planetsByHouse: Record<number, string[]> = {};
+  for (let h = 1; h <= 12; h++) planetsByHouse[h] = [];
+
+  for (const [name, p] of Object.entries(chart.planets ?? {})) {
+    if (!MAIN_PLANETS.includes(name)) continue;
+    const rashi = (p as any)?.rashi;
+    if (typeof rashi !== 'number') continue;
+    const house = ((rashi - ascRashi + 12) % 12) + 1;
+    planetsByHouse[house].push(name);
+  }
+
+  const result: ChartHouse[] = [];
+  for (let h = 1; h <= 12; h++) {
+    const houseRashi = ((ascRashi + h - 2) % 12) + 1;
+    const housePlanets: ChartPlanetPlacement[] = [];
+
+    if (h === 1 && chart.ascendant) {
+      housePlanets.push({
+        planet: 'Ascendant',
+        abbr: options.resolveAbbr('Ascendant'),
+        degree: 0,
+        isRetrograde: false,
+        isCombust: false,
+        isAscendant: true,
+      });
+    }
+
+    for (const name of planetsByHouse[h]) {
+      const p = chart.planets?.[name];
+      if (!p) continue;
+      housePlanets.push({
+        planet: name,
+        abbr: options.resolveAbbr(name),
+        degree: Math.floor(p.degree ?? 0),
+        isRetrograde: !!p.isRetrograde,
+        isCombust: !!p.isCombust,
+        isAscendant: false,
+      });
+    }
+
+    result.push({
+      number: h,
+      rashi: rashiLabel(houseRashi, undefined),
+      planets: housePlanets,
+    });
+  }
+
+  return result;
+}

@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { VedicChart } from '@/features/chart/components/VedicChart';
 import { buildChartHouses, buildVargaHouses } from '@/features/chart/lib/adapters';
 import { VARGA_INFO, VARGA_ORDER } from '../lib/varga-info';

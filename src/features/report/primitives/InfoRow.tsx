@@ -1,4 +1,4 @@
-﻿interface InfoRowProps {
+interface InfoRowProps {
   label: string;
   value: string;
   accent?: boolean;

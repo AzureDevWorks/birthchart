@@ -1,5 +1,6 @@
-﻿import { GlyphBadge } from '../primitives/GlyphBadge';
-import { PLANET_GLYPHS, RASHI_GLYPHS, RASHI_LORDS } from '../lib/glyphs';
+import { GlyphBadge } from '../primitives/GlyphBadge';
+import { RashiImage } from '../components/RashiImage';
+import { PLANET_GLYPHS, RASHI_LORDS } from '../lib/glyphs';
 
 interface PlanetaryMapSectionProps {
   kundli: Record<string, any>;
@@ -88,8 +89,8 @@ export function PlanetaryMapSection({ kundli }: PlanetaryMapSectionProps) {
 
               {/* Sign + degree */}
               <div className="space-y-0.5">
-                <p className="text-lg font-semibold leading-tight">
-                  <span className="mr-1.5 text-base">{RASHI_GLYPHS[rashiName]}</span>
+                <p className="text-lg font-semibold leading-tight flex items-center gap-2">
+                  <RashiImage rashi={rashiName} size={26} title={rashiName} />
                   {rashiName}
                 </p>
                 <p className="text-xs font-mono text-muted-foreground">

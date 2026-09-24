@@ -1,4 +1,4 @@
-﻿import type { Place } from './place';
+import type { Place } from './place';
 
 export type PlaceSearchResult = Omit<Place, 'timezone'>;
 

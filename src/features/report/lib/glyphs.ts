@@ -1,16 +1,16 @@
 import type { PlanetKey } from '../primitives/GlyphBadge';
 
 export const PLANET_GLYPHS: Record<string, string> = {
-  Sun:       '\u2609',  // ☉
-  Moon:      '\u263D',  // ☽
-  Mars:      '\u2642',  // ♂
-  Mercury:   '\u263F',  // ☿
-  Jupiter:   '\u2643',  // ♃
-  Venus:     '\u2640',  // ♀
-  Saturn:    '\u2644',  // ♄
-  Rahu:      '\u260A',  // ☊
-  Ketu:      '\u260B',  // ☋
-  Ascendant: '\u0932',  // ल
+  Sun:       '\u2609',  // ?
+  Moon:      '\u263D',  // ?
+  Mars:      '\u2642',  // 
+  Mercury:   '\u263F',  // ?
+  Jupiter:   '\u2643',  // ?
+  Venus:     '\u2640',  // 
+  Saturn:    '\u2644',  // ?
+  Rahu:      '\u260A',  // ?
+  Ketu:      '\u260B',  // ?
+  Ascendant: '\u0932',  // ?
 };
 
 export const RASHI_GLYPHS: Record<string, string> = {

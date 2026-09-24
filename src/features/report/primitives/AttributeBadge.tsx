@@ -1,4 +1,4 @@
-﻿export type BadgeTone = 'neutral' | 'positive' | 'warning' | 'negative' | 'info';
+export type BadgeTone = 'neutral' | 'positive' | 'warning' | 'negative' | 'info';
 
 interface AttributeBadgeProps {
   children: string;

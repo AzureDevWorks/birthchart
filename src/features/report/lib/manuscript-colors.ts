@@ -1,5 +1,5 @@
 /**
- * Manuscript palette — ivory paper + brown ink, with gold and
+ * Manuscript palette - ivory paper + brown ink, with gold and
  * vermilion that respond to the user's palette choice.
  *
  * Paper (ivory) and ink (brown) stay constant across palettes.

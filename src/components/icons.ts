@@ -1,7 +1,9 @@
-﻿export {
+export {
   MapPin as IconPin,
+  Home as IconHome,
   Clock as IconClock,
   Calendar as IconCalendar,
+  CalendarDays as IconCalendarDays,
   Search as IconSearch,
   Sun as IconSun,
   Moon as IconMoon,
@@ -15,4 +17,8 @@
   ChartBar as IconChart,
   User as IconUser,
   Loader2 as IconLoader,
+  LayoutGrid as IconLayoutGrid,
+  Orbit as IconOrbit,
+  Users as IconUsers,
+  Heart as IconHeart,
 } from 'lucide-react';

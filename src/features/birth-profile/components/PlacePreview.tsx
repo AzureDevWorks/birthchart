@@ -1,4 +1,4 @@
-﻿import { DateTime } from 'luxon';
+import { DateTime } from 'luxon';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { IconPin, IconClock } from '@/components/icons';

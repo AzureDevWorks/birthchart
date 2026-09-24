@@ -1,4 +1,4 @@
-﻿interface InfoTileProps {
+interface InfoTileProps {
   label: string;
   value: string;
   subtitle?: string;

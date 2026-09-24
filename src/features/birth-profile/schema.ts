@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 import { DateTime } from 'luxon';
 import { isValidLatitude, isValidLongitude, isValidTimezone } from '@/domain/geo/place';
 

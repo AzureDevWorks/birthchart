@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,15 +14,22 @@ import {
   MatchingError,
   type MatchingResult,
   type KootaScore,
-  type MangalDoshaDetail,
 } from '@/infrastructure/astrology/matching.adapter';
 import { MANUSCRIPT as C, MANUSCRIPT_ALPHA as CA } from '@/features/report/lib/manuscript-colors';
+import {
+  KOOTA_INFO,
+  verdictForKoota,
+  MANGLIK_HOUSE_NAMES,
+  KNOWLEDGE_BASE,
+  type KootaInfo,
+  type KootaVerdict,
+} from './lib/matching-lib';
 import type { BirthData } from '@/domain/astrology/birth-data';
 import type { Place } from '@/domain/geo/place';
 
-// ─────────────────────────────────────────────────────────────
-// Local types & helpers
-// ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Types & helpers
+// ═══════════════════════════════════════════════════════════════
 
 interface Draft {
   name: string;
@@ -54,79 +60,28 @@ function draftToBirthData(d: Draft, id: string): BirthData {
   };
 }
 
-// ─── Score bands ────────────────────────────────────────────
-
-type BandKey =
-  | 'uttam'
-  | 'uttamMadhyam'
-  | 'madhyam'
-  | 'samanya'
-  | 'adhamMadhyam'
-  | 'adham'
-  | 'atiAdham';
+// ─── Score bands ───
 
 interface Band {
-  key: BandKey;
   label: string;
   sanskrit: string;
-  min: number;
-  max: number;
-  accent: 'positive' | 'caution' | 'negative';
-  plainTerms: string;
+  tone: 'excellent' | 'good' | 'average' | 'below' | 'poor';
+  plain: string;
 }
-
-const BANDS: Band[] = [
-  {
-    key: 'uttam', label: 'Blessed Match', sanskrit: 'उत्तम', min: 32, max: 36,
-    accent: 'positive',
-    plainTerms:
-      'The score falls in the rarest band. The two charts agree on almost every dimension the tradition checks — temperament, physical pull, dharma, offspring. This is a match the shastras call blessed. Nothing in the classical literature asks for extra caution here. Proceed with full confidence.',
-  },
-  {
-    key: 'uttamMadhyam', label: 'Excellent Match', sanskrit: 'उत्तम मध्यम', min: 28, max: 31,
-    accent: 'positive',
-    plainTerms:
-      'A very strong score. Seven or eight kootas align. The tradition treats this as highly favorable — marriages with this reading tend to have both emotional stability and material support. Whatever small weakness appears is compensated by the overall strength. Recommended without hesitation.',
-  },
-  {
-    key: 'madhyam', label: 'Good Match', sanskrit: 'मध्यम', min: 24, max: 27,
-    accent: 'positive',
-    plainTerms:
-      'A solid match with a caveat. Most kootas align well, but one or two may fall short — usually Gana, Bhakoot, or Nadi, since those carry the most weight. The tradition says: proceed, but pay attention to the flagged koota. In most cases a small remediation (a specific japa, a fast, or a ritual on a particular tithi) restores balance. A consultation with an astrologer is advised, not required.',
-  },
-  {
-    key: 'samanya', label: 'Average Match', sanskrit: 'सामान्य', min: 18, max: 23,
-    accent: 'caution',
-    plainTerms:
-      'The score is above the acceptance line, but the harmony is not automatic. The two charts work together, but they will need conscious effort in some areas — usually temperament, communication, or long-term goals. The classical texts advise deeper analysis: check the Navamsha (D9) of both charts, examine the 7th house of each, and confirm that the current dashas support union. If those are favorable, marriage can be recommended with awareness.',
-  },
-  {
-    key: 'adhamMadhyam', label: 'Below Average', sanskrit: 'अधम मध्यम', min: 13, max: 17,
-    accent: 'caution',
-    plainTerms:
-      'The score falls below the classical comfort line. Several kootas are weak, and the tradition treats this as a signal to pause. This does not mean the marriage is doomed — but it does mean the couple would enter the union carrying structural friction. A serious consultation is essential. Look for strong compensating factors before proceeding: a powerful Jupiter in either chart, favorable 7th-house dashas, or an exceptionally strong Navamsha. Without those, most traditions advise against.',
-  },
-  {
-    key: 'adham', label: 'Poor Match', sanskrit: 'अधम', min: 7, max: 12,
-    accent: 'negative',
-    plainTerms:
-      'The score is well below the acceptance threshold. Most of the eight kootas are weak, and the tradition consistently advises against proceeding on this basis alone. Where marriages at this band do happen, the classical texts note that both partners must be unusually mature and willing to work through sustained difficulty. Consult an experienced Jyotishi before making any decision.',
-  },
-  {
-    key: 'atiAdham', label: 'Very Poor Match', sanskrit: 'अति अधम', min: 0, max: 6,
-    accent: 'negative',
-    plainTerms:
-      'The score falls in the lowest band. This is exceptionally rare. Classical texts strongly discourage marriage on the basis of this reading, unless the charts show extraordinarily strong compensating factors — which should be confirmed by a qualified Jyotishi, not by software alone. If you are considering this match, seek a full in-person consultation before proceeding.',
-  },
-];
 
 function bandFor(score: number): Band {
-  return BANDS.find((b) => score >= b.min && score <= b.max) ?? BANDS[BANDS.length - 1];
+  if (score >= 32) return { label: 'Blessed Match', sanskrit: 'उत्तम', tone: 'excellent', plain: 'The rarest band. The two charts agree on almost every dimension. Proceed with confidence.' };
+  if (score >= 28) return { label: 'Excellent Match', sanskrit: 'उत्तम मध्यम', tone: 'excellent', plain: 'A very strong score. Seven or eight kootas align. Recommended without hesitation.' };
+  if (score >= 24) return { label: 'Good Match', sanskrit: 'मध्यम', tone: 'good', plain: 'A solid match with a caveat. One or two kootas may fall short. Consultation advised, not required.' };
+  if (score >= 18) return { label: 'Average Match', sanskrit: 'सामान्य', tone: 'average', plain: 'Above the acceptance line, but harmony is not automatic. Deeper analysis (D9, 7th house, dashas) needed.' };
+  if (score >= 13) return { label: 'Below Average', sanskrit: 'अधम मध्यम', tone: 'below', plain: 'Below the classical comfort line. A serious consultation is essential.' };
+  if (score >= 7) return { label: 'Poor Match', sanskrit: 'अधम', tone: 'poor', plain: 'Well below the acceptance threshold. The tradition consistently advises against.' };
+  return { label: 'Very Poor Match', sanskrit: 'अति अधम', tone: 'poor', plain: 'The lowest band. Classical texts strongly discourage.' };
 }
 
-// ─────────────────────────────────────────────────────────────
-// The view
-// ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Main component
+// ═══════════════════════════════════════════════════════════════
 
 export function MatchingView() {
   const { t } = useTranslation();
@@ -189,125 +144,102 @@ export function MatchingView() {
           {t('matching.title', { defaultValue: 'Kundli Matching' })}
         </h1>
         <p
-          className="text-sm max-w-xl mx-auto leading-relaxed"
+          className="text-sm max-w-2xl mx-auto leading-relaxed"
           style={{ color: C.brownSoft, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px' }}
         >
           {t('matching.subtitle', {
             defaultValue:
-              'Two charts. One question: do they meet as they should? The classical Ashtakoota Guna Milan weighs eight qualities of the Moon and rising signs.',
+              'The classical Ashtakoota Guna Milan — eight qualities of the Moon sign and birth nakshatra — read alongside Mangal Dosha, the classical caution regarding Mars.',
           })}
         </p>
       </div>
 
+      {/* Two-person entry */}
       <OrnamentalDivider />
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <PersonForm
-          label={t('matching.personA', { defaultValue: 'Person A' })}
-          draft={draftA}
-          onChange={setDraftA}
-        />
-        <PersonForm
-          label={t('matching.personB', { defaultValue: 'Person B' })}
-          draft={draftB}
-          onChange={setDraftB}
-        />
+        <PersonForm label={t('matching.personA', { defaultValue: 'Person A' })} draft={draftA} onChange={setDraftA} />
+        <PersonForm label={t('matching.personB', { defaultValue: 'Person B' })} draft={draftB} onChange={setDraftB} />
       </div>
 
       <div className="flex justify-center gap-3 pt-2">
         <Button onClick={handleMatch} disabled={!ready || busy} size="lg" className="px-8">
           {busy ? t('matching.calculating', { defaultValue: 'Calculating…' }) : t('matching.calculate', { defaultValue: 'Match' })}
         </Button>
-        {result && (
-          <Button variant="outline" onClick={handleReset} size="lg">
-            {t('matching.reset', { defaultValue: 'Reset' })}
-          </Button>
-        )}
+        {result && <Button variant="outline" onClick={handleReset} size="lg">{t('matching.reset', { defaultValue: 'Reset' })}</Button>}
       </div>
 
       {error && (
         <div
           className="rounded-lg border px-4 py-3 text-sm"
-          style={{
-            borderColor: 'hsl(6 60% 38% / 0.35)',
-            background: 'hsl(6 60% 38% / 0.05)',
-            color: C.vermilion,
-          }}
+          style={{ borderColor: CA.vermilion(0.35), background: CA.vermilion(0.05), color: C.vermilion }}
         >
           {error}
         </div>
       )}
 
+      {/* Results */}
       {result && (
         <div id="matching-results" className="pt-8 space-y-6">
           <ScoreHeader result={result} />
 
           <OrnamentalDivider />
 
+          {/* Eight kootas */}
           <Section
             eyebrow={t('matching.kootasEyebrow', { defaultValue: 'The Eight Kootas' })}
             title={t('matching.kootasTitle', { defaultValue: 'Guna Milan Breakdown' })}
           >
             <KootaHighlights kootas={result.kootas} />
-            <div className="pt-4">
-              <KootaGrid kootas={result.kootas} />
+            <div className="pt-5 space-y-3">
+              {result.kootas.map((k) => (
+                <KootaCard key={k.name} koota={k} />
+              ))}
             </div>
           </Section>
 
           <OrnamentalDivider />
 
+          {/* Mangal Dosha — redesigned */}
           <Section
             eyebrow={t('matching.doshaEyebrow', { defaultValue: 'Mangal Dosha' })}
             title={t('matching.doshaTitle', { defaultValue: 'Mars Check' })}
             hint={t('matching.doshaHint', {
               defaultValue:
-                'Mangal Dosha is a classical caution for Mars in the 1st, 2nd, 4th, 7th, 8th, or 12th house. Modern practice weighs cancellations carefully.',
+                'Mangal Dosha (Kuja Dosha) is a classical caution — Mars in one of the marriage-sensitive houses. The tradition is subtler than most apps admit: severity depends on the house, the chart system, and roughly thirty cancellation rules.',
             })}
           >
-            <DoshaGrid
-              doshaA={result.dosha.boy}
-              doshaB={result.dosha.girl}
-              nameA={draftA.name}
-              nameB={draftB.name}
-            />
+            <MangalExplainer />
+            <div className="pt-5 space-y-4">
+              <MangalPersonCard name={draftA.name || 'Person A'} dosha={result.dosha.boy} />
+              <MangalPersonCard name={draftB.name || 'Person B'} dosha={result.dosha.girl} />
+            </div>
+            <MangalJointVerdict doshaA={result.dosha.boy} doshaB={result.dosha.girl} />
           </Section>
+
+          <OrnamentalDivider />
+
+          {/* Knowledge base */}
+          <KnowledgePanel />
         </div>
       )}
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Person form
-// ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Person form (unchanged)
+// ═══════════════════════════════════════════════════════════════
 
-function PersonForm({
-  label,
-  draft,
-  onChange,
-}: {
-  label: string;
-  draft: Draft;
-  onChange: (d: Draft) => void;
-}) {
+function PersonForm({ label, draft, onChange }: { label: string; draft: Draft; onChange: (d: Draft) => void }) {
   const { t } = useTranslation();
-
   return (
-    <div
-      className="rounded-2xl p-6 space-y-4"
-      style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.4)}` }}
-    >
-      <p
-        className="text-[10px] uppercase tracking-[0.3em] font-semibold"
-        style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}
-      >
+    <div className="rounded-2xl p-6 space-y-4" style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.4)}` }}>
+      <p className="text-[10px] uppercase tracking-[0.3em] font-semibold" style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}>
         {label}
       </p>
 
       <div className="space-y-2">
-        <Label htmlFor={`name-${label}`} className="text-xs">
-          {t('matching.name', { defaultValue: 'Name' })}
-        </Label>
+        <Label htmlFor={`name-${label}`} className="text-xs">{t('matching.name', { defaultValue: 'Name' })}</Label>
         <Input
           id={`name-${label}`}
           value={draft.name}
@@ -316,39 +248,20 @@ function PersonForm({
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        <div className="space-y-2">
-          <Label className="text-xs">{t('matching.date', { defaultValue: 'Birth Date' })}</Label>
-          <BirthDateField
-            value={draft.date}
-            onChange={(iso) => onChange({ ...draft, date: iso })}
-            minYear={1900}
-            maxYear={new Date().getFullYear()}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`time-${label}`} className="text-xs">
-            {t('matching.time', { defaultValue: 'Birth Time' })}
-          </Label>
-          <Input
-            id={`time-${label}`}
-            type="time"
-            step="1"
-            value={draft.time}
-            onChange={(e) => onChange({ ...draft, time: e.target.value })}
-          />
-        </div>
+      <div className="space-y-2">
+        <Label className="text-xs">{t('matching.date', { defaultValue: 'Birth Date' })}</Label>
+        <BirthDateField value={draft.date} onChange={(iso) => onChange({ ...draft, date: iso })} minYear={1900} maxYear={new Date().getFullYear()} />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`time-${label}`} className="text-xs">{t('matching.time', { defaultValue: 'Birth Time' })}</Label>
+        <Input id={`time-${label}`} type="time" step="1" value={draft.time} onChange={(e) => onChange({ ...draft, time: e.target.value })} />
       </div>
 
       <div className="space-y-2">
         <Label className="text-xs">{t('matching.place', { defaultValue: 'Birth Place' })}</Label>
         {draft.place ? (
-          <PlacePreview
-            place={draft.place}
-            localDate={draft.date}
-            localTime={draft.time}
-            onChange={() => onChange({ ...draft, place: null })}
-          />
+          <PlacePreview place={draft.place} localDate={draft.date} localTime={draft.time} onChange={() => onChange({ ...draft, place: null })} />
         ) : (
           <PlaceCombobox value={null} onChange={(p) => onChange({ ...draft, place: p })} />
         )}
@@ -357,9 +270,9 @@ function PersonForm({
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Score header — the big number + band + plain-terms reading
-// ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Score header
+// ═══════════════════════════════════════════════════════════════
 
 function ScoreHeader({ result }: { result: MatchingResult }) {
   const { t } = useTranslation();
@@ -367,202 +280,156 @@ function ScoreHeader({ result }: { result: MatchingResult }) {
   const pct = result.totalScore / result.maxScore;
 
   const accentColor =
-    band.accent === 'positive' ? 'hsl(150 45% 32%)'
-    : band.accent === 'caution' ? C.vermilion
+    band.tone === 'excellent' ? 'hsl(150 45% 32%)'
+    : band.tone === 'good' ? C.gold
+    : band.tone === 'average' ? C.vermilion
     : 'hsl(6 60% 38%)';
 
   const borderColor =
-    band.accent === 'positive' ? 'hsl(150 45% 42% / 0.35)'
-    : band.accent === 'caution' ? 'hsl(38 55% 48% / 0.4)'
+    band.tone === 'excellent' ? 'hsl(150 45% 42% / 0.35)'
+    : band.tone === 'good' ? CA.gold(0.4)
+    : band.tone === 'average' ? CA.vermilion(0.35)
     : 'hsl(6 60% 38% / 0.35)';
 
   const bgColor =
-    band.accent === 'positive' ? 'hsl(150 45% 42% / 0.04)'
-    : band.accent === 'caution' ? 'hsl(38 55% 48% / 0.04)'
+    band.tone === 'excellent' ? 'hsl(150 45% 42% / 0.04)'
+    : band.tone === 'good' ? CA.gold(0.04)
+    : band.tone === 'average' ? CA.vermilion(0.04)
     : 'hsl(6 60% 38% / 0.04)';
 
-  // Verdict split — headline + detail
+  // Library verdict — split headline from detail
   const [headline, ...rest] = result.verdict.split(/[-,]\s+/);
   const detail = rest.join(', ');
 
+  // Detect koota doshas
+  const nadiDosha = result.kootas.find((k) => k.name === 'Nadi' && k.score === 0);
+  const bhakootDosha = result.kootas.find((k) => k.name === 'Bhakoot' && k.score === 0);
+  const yoniHostile = result.kootas.find((k) => k.name === 'Yoni' && k.score === 0);
+  const varnaMismatch = result.kootas.find((k) => k.name === 'Varna' && k.score === 0);
+  const ganaMismatch = result.kootas.find((k) => k.name === 'Gana' && k.score === 0);
+
+  const doshas = [
+    nadiDosha && { key: 'nadi', label: 'Nadi Dosha', text: 'Nadi Koot is at zero — the heaviest of the eight factors, governing health and progeny. Classical tradition considers a match inauspicious when Nadi is unfavourable, even at 28+ points.' },
+    bhakootDosha && { key: 'bhakoot', label: 'Bhakoot Dosha', text: 'Bhakoot Koot is at zero, affecting family and emotional prosperity. Classical texts advise serious consultation when this fails.' },
+    ganaMismatch && { key: 'gana', label: 'Gana Mismatch', text: 'The two temperaments lie at opposite ends of the Gana scale — Deva and Rakshasa, or Rakshasa and Deva. Friction in daily life is likely; conscious practice is required.' },
+    yoniHostile && { key: 'yoni', label: 'Yoni Hostility', text: 'The two nakshatra animals are classical enemies. This affects physical and intimate compatibility; it is considered a real but remediable signal.' },
+    varnaMismatch && { key: 'varna', label: 'Varna Mismatch', text: "The bride's Varna is higher than the groom's. The tradition views this as an ego/hierarchy imbalance in the union." },
+  ].filter(Boolean) as { key: string; label: string; text: string }[];
+
   return (
     <div className="space-y-6 pt-4">
-      {/* Big number */}
+      {/* Score ring */}
       <div className="text-center space-y-3">
-        <p
-          className="text-[10px] uppercase tracking-[0.4em] font-semibold"
-          style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}
-        >
+        <p className="text-[10px] uppercase tracking-[0.4em] font-semibold" style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}>
           {t('matching.scoreEyebrow', { defaultValue: 'Guna Milan Score' })}
         </p>
         <div className="flex items-baseline justify-center gap-3">
-          <p
-            className="leading-none font-bold"
-            style={{
-              fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-              fontSize: 'clamp(3.5rem, 8vw, 5.5rem)',
-              color: C.brown,
-              fontVariantNumeric: 'tabular-nums',
-            }}
-          >
+          <p className="leading-none font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(3.5rem, 8vw, 5.5rem)', color: C.brown, fontVariantNumeric: 'tabular-nums' }}>
             {result.totalScore}
           </p>
-          <p
-            style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-              color: C.brownSoft,
-            }}
-          >
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: C.brownSoft }}>
             / {result.maxScore}
           </p>
         </div>
 
         <div className="max-w-md mx-auto h-2 rounded-full overflow-hidden" style={{ background: CA.goldSoft(0.25) }}>
-          <div
-            className="h-full transition-all"
-            style={{ width: `${Math.min(100, Math.max(0, pct * 100))}%`, background: accentColor }}
-          />
+          <div className="h-full transition-all" style={{ width: `${Math.min(100, Math.max(0, pct * 100))}%`, background: accentColor }} />
         </div>
 
         <div className="space-y-1 pt-2">
-          <p
-            className="font-bold"
-            style={{
-              fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-              fontSize: 'clamp(1.15rem, 2vw, 1.4rem)',
-              color: C.brown,
-            }}
-          >
+          <p className="font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.15rem, 2vw, 1.4rem)', color: C.brown }}>
             {headline}
           </p>
           {detail && (
-            <p
-              className="text-sm italic"
-              style={{ color: C.brownSoft, fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-            >
+            <p className="text-sm italic" style={{ color: C.brownSoft, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
               {detail}
             </p>
           )}
         </div>
       </div>
 
-      {/* Band label */}
-      <div className="text-center pt-2">
-        <div
-          className="inline-block rounded-full px-5 py-2"
-          style={{ border: `1px solid ${borderColor}`, background: bgColor }}
-        >
-          <span
-            style={{
-              fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-              fontSize: '15px',
-              fontWeight: 600,
-              color: accentColor,
-              marginRight: '8px',
-            }}
-          >
+      {/* Band pill */}
+      <div className="text-center pt-1">
+        <div className="inline-block rounded-full px-5 py-2" style={{ border: `1px solid ${borderColor}`, background: bgColor }}>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontWeight: 600, color: accentColor, marginRight: '8px' }}>
             {band.label}
           </span>
-          <span
-            style={{
-              fontFamily: "'Tiro Devanagari Sanskrit', 'Noto Serif Devanagari', serif",
-              fontSize: '13px',
-              color: C.brownSoft,
-            }}
-          >
+          <span style={{ fontFamily: "'Tiro Devanagari Sanskrit', 'Noto Serif Devanagari', serif", fontSize: '13px', color: C.brownSoft }}>
             {band.sanskrit}
           </span>
         </div>
       </div>
 
+      {/* Dosha detection banners */}
+      {doshas.length > 0 && (
+        <div className="space-y-2.5 max-w-3xl mx-auto">
+          {doshas.map((d) => (
+            <div
+              key={d.key}
+              className="rounded-xl border p-4 flex items-start gap-3"
+              style={{ borderColor: CA.vermilion(0.3), background: CA.vermilion(0.04) }}
+            >
+              <span style={{ fontSize: '18px', color: C.vermilion, lineHeight: 1, marginTop: 2 }}>⚠</span>
+              <div className="space-y-1">
+                <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: C.vermilion }}>
+                  {d.label}
+                </p>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: C.brown, lineHeight: 1.5 }}>
+                  {d.text}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Plain-terms reading */}
-      <div
-        className="rounded-2xl p-6 md:p-8"
-        style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.4)}` }}
-      >
-        <p
-          className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-3"
-          style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}
-        >
+      <div className="rounded-2xl p-6 md:p-8 max-w-3xl mx-auto" style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.4)}` }}>
+        <p className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-3" style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}>
           {t('matching.plainTermsEyebrow', { defaultValue: 'In plain terms' })}
         </p>
-        <p
-          className="leading-relaxed"
-          style={{
-            fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-            fontSize: '16px',
-            color: C.brown,
-          }}
-        >
-          {band.plainTerms}
+        <p className="leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: C.brown }}>
+          {band.plain}
         </p>
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Koota highlights — strongest + weakest at a glance
-// ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Koota highlights
+// ═══════════════════════════════════════════════════════════════
 
 function KootaHighlights({ kootas }: { kootas: KootaScore[] }) {
-  const perfect = kootas.filter((k) => k.score === k.maxScore);
+  const perfect = kootas.filter((k) => k.score >= k.maxScore);
   const imperfect = kootas.filter((k) => k.score < k.maxScore);
 
-  // Best: if all perfect, say so. Else list perfects.
-  const bestText =
-    perfect.length === kootas.length
-      ? 'All eight kootas perfect'
-      : perfect.length > 0
-        ? perfect.map((k) => `${k.name} (${k.score}/${k.maxScore})`).join(' · ')
-        : '—';
+  const bestText = perfect.length === kootas.length
+    ? 'All eight kootas at full marks'
+    : perfect.length > 0
+      ? perfect.map((k) => `${k.name} (${k.score}/${k.maxScore})`).join(' · ')
+      : '—';
 
-  // Worst: sort ascending, list the weak ones.
-  const sortedWeak = [...imperfect].sort((a, b) => a.score / a.maxScore - b.score / b.maxScore);
-  const worstText =
-    sortedWeak.length === 0
-      ? 'None'
-      : sortedWeak.map((k) => `${k.name} (${k.score}/${k.maxScore})`).join(' · ');
+  const sortedWeak = [...imperfect].sort((a, b) => (a.score / a.maxScore) - (b.score / b.maxScore));
+  const worstText = sortedWeak.length === 0
+    ? 'None — every koota is at full marks'
+    : sortedWeak.map((k) => `${k.name} (${k.score}/${k.maxScore})`).join(' · ');
 
   return (
-    <div
-      className="rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5"
-      style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.35)}` }}
-    >
+    <div className="rounded-2xl p-5 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-5" style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.35)}` }}>
       <div>
-        <p
-          className="text-[10px] uppercase tracking-[0.28em] font-semibold mb-2"
-          style={{ color: 'hsl(150 45% 32%)', fontFamily: "'Inter', system-ui, sans-serif" }}
-        >
+        <p className="text-[10px] uppercase tracking-[0.28em] font-semibold mb-2" style={{ color: 'hsl(150 45% 32%)', fontFamily: "'Inter', system-ui, sans-serif" }}>
           ★ Strongest
         </p>
-        <p
-          className="leading-relaxed"
-          style={{
-            fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-            fontSize: '15px',
-            color: C.brown,
-          }}
-        >
+        <p className="leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: C.brown }}>
           {bestText}
         </p>
       </div>
       <div>
-        <p
-          className="text-[10px] uppercase tracking-[0.28em] font-semibold mb-2"
-          style={{ color: 'hsl(6 60% 38%)', fontFamily: "'Inter', system-ui, sans-serif" }}
-        >
+        <p className="text-[10px] uppercase tracking-[0.28em] font-semibold mb-2" style={{ color: C.vermilion, fontFamily: "'Inter', system-ui, sans-serif" }}>
           ⚠ Needs attention
         </p>
-        <p
-          className="leading-relaxed"
-          style={{
-            fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-            fontSize: '15px',
-            color: C.brown,
-          }}
-        >
+        <p className="leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: C.brown }}>
           {worstText}
         </p>
       </div>
@@ -570,189 +437,301 @@ function KootaHighlights({ kootas }: { kootas: KootaScore[] }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Koota grid
-// ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Koota card — with learn panel
+// ═══════════════════════════════════════════════════════════════
 
-// Kootas where the "Boy · Girl" value line is meaningful to the user
-const MEANINGFUL_VALUES = new Set(['Varna', 'Vashya', 'Tara', 'Yoni', 'Gana']);
+function KootaCard({ koota }: { koota: KootaScore }) {
+  const [showLearn, setShowLearn] = useState(false);
+  const pct = koota.maxScore > 0 ? koota.score / koota.maxScore : 0;
+  const verdict: KootaVerdict = verdictForKoota(koota.score, koota.maxScore);
+  const info: KootaInfo | undefined = KOOTA_INFO[koota.name];
 
-function KootaGrid({ kootas }: { kootas: KootaScore[] }) {
+  const tone = verdict.tone;
+  const accentColor = tone === 'positive' ? 'hsl(150 45% 42%)' : tone === 'neutral' ? C.gold : 'hsl(6 60% 48%)';
+  const borderColor = tone === 'positive' ? 'hsl(150 45% 42% / 0.4)' : tone === 'neutral' ? CA.gold(0.4) : CA.vermilion(0.4);
+
+  const showValues = Boolean(koota.boy || koota.girl) && koota.boy !== koota.girl;
+
   return (
-    <div className="space-y-3">
-      {kootas.map((k) => {
-        const pct = k.maxScore > 0 ? k.score / k.maxScore : 0;
-        const mark = pct >= 0.99 ? '✓' : pct >= 0.5 ? '◐' : '✗';
-
-        const barColor =
-          pct >= 0.99 ? 'hsl(150 45% 42%)'
-          : pct >= 0.5 ? 'hsl(38 55% 48%)'
-          : 'hsl(6 60% 48%)';
-
-        const showValues = MEANINGFUL_VALUES.has(k.name) && (k.boy || k.girl);
-
-        return (
-          <div
-            key={k.name}
-            className="rounded-lg p-4"
-            style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.3)}` }}
-          >
-            <div className="flex items-baseline justify-between gap-3 mb-2">
-              <div className="flex items-baseline gap-3">
-                <span
-                  className="font-bold"
-                  style={{
-                    fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-                    fontSize: '16px',
-                    color: C.brown,
-                    minWidth: '115px',
-                  }}
-                >
-                  {k.name}
-                </span>
-                <span
-                  className="text-[10px] uppercase tracking-wider hidden md:inline"
-                  style={{ color: C.brownSoft, fontFamily: "'Inter', system-ui, sans-serif" }}
-                >
-                  {k.area}
-                </span>
-              </div>
-              <div className="flex items-baseline gap-3">
-                <span
-                  style={{
-                    fontFamily: 'ui-monospace, monospace',
-                    fontSize: '13px',
-                    color: C.brown,
-                    fontVariantNumeric: 'tabular-nums',
-                  }}
-                >
-                  {k.score}/{k.maxScore}
-                </span>
-                <span
-                  style={{
-                    fontSize: '14px',
-                    color: barColor,
-                    fontWeight: 700,
-                    width: '14px',
-                    textAlign: 'center',
-                  }}
-                >
-                  {mark}
-                </span>
-              </div>
-            </div>
-
-            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: CA.goldSoft(0.2) }}>
-              <div className="h-full" style={{ width: `${pct * 100}%`, background: barColor }} />
-            </div>
-
-            {showValues && (
-              <p className="text-[11px] mt-2 font-mono" style={{ color: C.brownSoft }}>
-                {k.boy} · {k.girl}
-              </p>
+    <div className="rounded-xl" style={{ background: C.ivory, border: `1px solid ${borderColor}` }}>
+      <div className="p-5 space-y-3">
+        {/* Header row */}
+        <div className="flex items-baseline justify-between gap-3 flex-wrap">
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '18px', fontWeight: 700, color: C.brown, minWidth: '120px' }}>
+              {koota.name}
+            </span>
+            {info && (
+              <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.brownSoft }}>
+                {info.area}
+              </span>
             )}
           </div>
-        );
-      })}
+          <div className="flex items-baseline gap-3">
+            <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: '14px', color: C.brown, fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+              {koota.score}/{koota.maxScore}
+            </span>
+            <span
+              className="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded font-bold"
+              style={{ color: accentColor, border: `1px solid ${borderColor}`, fontFamily: "'Inter', system-ui, sans-serif" }}
+            >
+              {verdict.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Score bar */}
+        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: CA.goldSoft(0.2) }}>
+          <div className="h-full" style={{ width: `${pct * 100}%`, background: accentColor }} />
+        </div>
+
+        {/* Values */}
+        {showValues && (
+          <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '12px', color: C.brownSoft }}>
+            <span style={{ opacity: 0.7 }}>Boy:</span> <strong style={{ color: C.brown }}>{koota.boy}</strong>
+            <span className="mx-2" style={{ opacity: 0.4 }}>·</span>
+            <span style={{ opacity: 0.7 }}>Girl:</span> <strong style={{ color: C.brown }}>{koota.girl}</strong>
+          </p>
+        )}
+
+        {/* Learn toggle */}
+        {info && (
+          <button
+            type="button"
+            onClick={() => setShowLearn((v) => !v)}
+            className="text-[10px] uppercase tracking-[0.2em] font-semibold transition-colors"
+            style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}
+          >
+            {showLearn ? '▴ Hide' : '▾ What this means'}
+          </button>
+        )}
+      </div>
+
+      {/* Learn panel */}
+      {showLearn && info && (
+        <div
+          className="px-5 py-4 space-y-3"
+          style={{ borderTop: `1px solid ${CA.goldSoft(0.3)}`, background: CA.ivoryDeep(0.4) }}
+        >
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: C.brown, lineHeight: 1.6 }}>
+            {info.rule}
+          </p>
+          <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '10px', color: C.brownSoft }}>
+            <span style={{ opacity: 0.7 }}>Weight:</span> {info.weight === 'heavy' ? 'Heavy (traditional priority)' : info.weight === 'medium' ? 'Medium' : 'Light'}
+            <span className="mx-2">·</span>
+            <span style={{ opacity: 0.7 }}>Maximum:</span> {info.maxScore} {info.maxScore === 1 ? 'point' : 'points'}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Dosha grid
-// ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// Mangal Dosha — Explainer
+// ═══════════════════════════════════════════════════════════════
 
-function DoshaGrid({
-  doshaA,
-  doshaB,
-  nameA,
-  nameB,
-}: {
-  doshaA: MangalDoshaDetail;
-  doshaB: MangalDoshaDetail;
-  nameA: string;
-  nameB: string;
-}) {
+function MangalExplainer() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <DoshaCard name={nameA || 'Person A'} dosha={doshaA} />
-      <DoshaCard name={nameB || 'Person B'} dosha={doshaB} />
+    <div className="rounded-2xl p-6 md:p-7 space-y-4 max-w-3xl mx-auto" style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.4)}` }}>
+      <p className="text-[10px] uppercase tracking-[0.3em] font-semibold" style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}>
+        What this means
+      </p>
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: C.brown, lineHeight: 1.65 }}>
+        Mangal Dosha fires when Mars occupies one of six houses — counted from the Lagna in the Rashi chart: <strong>I, II, IV, VII, VIII, XII</strong>. These correspond to the body, the family, the home, the marriage, transformation, and the bed. The dosha is considered stronger when Mars is also undignified and unaffected by Jupiter or the Moon. It is largely neutralised when Mars is in its own sign or exalted, aspected by Jupiter, or matched by a similarly placed Mars in the partner's chart.
+      </p>
+      <div className="flex flex-wrap gap-2 pt-2">
+        {MANGLIK_HOUSES_SORTED.map((h) => (
+          <span key={h} className="text-[11px] font-mono px-2.5 py-1 rounded" style={{ border: `1px solid ${CA.goldSoft(0.4)}`, color: C.brown }}>
+            {h} · {MANGLIK_HOUSE_NAMES[h]}
+          </span>
+        ))}
+      </div>
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: C.brownSoft, fontStyle: 'italic', lineHeight: 1.6 }}>
+        Of the roughly thirty classical cancellation rules, a serious reading weighs the most commonly cited: Mars in own sign, Mars exalted, Mars in moolatrikona, Mars conjunct or aspected by Jupiter, and the partner also being Manglik — in which case the two doshas cancel one another.
+      </p>
     </div>
   );
 }
 
-function DoshaCard({ name, dosha }: { name: string; dosha: MangalDoshaDetail }) {
-  const isCancelled = /cancell?ed/i.test(dosha.description);
+const MANGLIK_HOUSES_SORTED = [1, 2, 4, 7, 8, 12];
 
-  const tone: 'positive' | 'caution' | 'negative' | 'cancelled' =
-    !dosha.hasDosha ? 'positive'
-    : isCancelled ? 'cancelled'
-    : dosha.isHigh ? 'negative'
-    : 'caution';
+// ═══════════════════════════════════════════════════════════════
+// Mangal Dosha — Person card
+// ═══════════════════════════════════════════════════════════════
+
+function MangalPersonCard({ name, dosha }: { name: string; dosha: any }) {
+  // Accept either the new classical shape or the legacy library shape.
+  const hasRashi = Boolean(dosha.rashiHasDosha ?? dosha.hasDosha);
+  const isCancelled = Boolean(dosha.isCancelled);
+  const chalitVariant = Boolean(dosha.chalitHasDosha && !hasRashi);
+  const marsHouse = dosha.rashiMarsHouse ?? dosha.marsHouse ?? 0;
+  const marsDignity = dosha.marsDignity ?? 'neutral';
+  const marsRashi = dosha.marsRashiName ?? '—';
+  const cancellationReason = dosha.cancellationReason;
+
+  // Determine the display state
+  let icon = '✓';
+  let tone: 'positive' | 'cancelled' | 'mild' | 'warning' | 'negative' = 'positive';
+  let headline = 'Not Manglik';
+  let sub = `Mars in House ${marsHouse} · ${marsRashi} · ${marsDignity}`;
+
+  if (hasRashi && !isCancelled) {
+    icon = marsHouse === 7 ? '⚠' : '◐';
+    tone = marsHouse === 7 ? 'negative' : 'warning';
+    headline = marsHouse === 7 ? 'Manglik · Significant' : 'Manglik';
+  } else if (hasRashi && isCancelled) {
+    icon = '⊘';
+    tone = 'cancelled';
+    headline = 'Present · Cancelled';
+  } else if (chalitVariant) {
+    icon = '◐';
+    tone = 'mild';
+    headline = 'Not Manglik · Rashi';
+    sub = `${sub} · Chalit variant: House ${dosha.chalitMarsHouse}`;
+  }
 
   const palette = {
-    positive: {
-      border: 'hsl(150 45% 42% / 0.4)',
-      bg: 'hsl(150 45% 42% / 0.04)',
-      accent: 'hsl(150 45% 32%)',
-      icon: '✓',
-      label: 'Not present',
-    },
-    cancelled: {
-      border: 'hsl(215 32% 44% / 0.35)',
-      bg: 'hsl(215 32% 44% / 0.04)',
-      accent: 'hsl(215 32% 34%)',
-      icon: '⊘',
-      label: 'Present · Cancelled',
-    },
-    caution: {
-      border: 'hsl(38 55% 48% / 0.4)',
-      bg: 'hsl(38 55% 48% / 0.04)',
-      accent: 'hsl(38 55% 38%)',
-      icon: '◐',
-      label: 'Present',
-    },
-    negative: {
-      border: 'hsl(6 60% 38% / 0.4)',
-      bg: 'hsl(6 60% 38% / 0.04)',
-      accent: 'hsl(6 60% 38%)',
-      icon: '⚠',
-      label: 'Present · High',
-    },
+    positive:   { border: 'hsl(150 45% 42% / 0.4)',  bg: 'hsl(150 45% 42% / 0.04)',  accent: 'hsl(150 45% 32%)' },
+    cancelled:  { border: 'hsl(215 32% 44% / 0.4)',  bg: 'hsl(215 32% 44% / 0.04)',  accent: 'hsl(215 32% 34%)' },
+    mild:       { border: CA.gold(0.4),              bg: CA.gold(0.04),              accent: 'hsl(38 55% 38%)' },
+    warning:    { border: CA.vermilion(0.35),        bg: CA.vermilion(0.04),         accent: C.vermilion },
+    negative:   { border: 'hsl(6 60% 38% / 0.45)',   bg: 'hsl(6 60% 38% / 0.05)',    accent: 'hsl(6 60% 38%)' },
   }[tone];
 
   return (
-    <div
-      className="rounded-xl p-5 space-y-2"
-      style={{ border: `1px solid ${palette.border}`, background: palette.bg }}
-    >
-      <div className="flex items-baseline justify-between">
-        <p
-          className="font-bold"
-          style={{
-            fontFamily: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-            fontSize: '17px',
-            color: C.brown,
-          }}
-        >
+    <div className="rounded-2xl p-6 space-y-3 max-w-3xl mx-auto" style={{ border: `1px solid ${palette.border}`, background: palette.bg }}>
+      {/* Name + icon */}
+      <div className="flex items-baseline justify-between gap-3">
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '18px', fontWeight: 700, color: C.brown }}>
           {name}
         </p>
-        <span style={{ fontSize: '18px', color: palette.accent }}>
-          {palette.icon}
+        <span style={{ fontSize: '20px', color: palette.accent, lineHeight: 1 }}>
+          {icon}
         </span>
       </div>
-      <p
-        className="text-[10px] uppercase tracking-wider font-semibold"
-        style={{ color: palette.accent, fontFamily: "'Inter', system-ui, sans-serif" }}
-      >
-        {palette.label}
+
+      {/* Headline */}
+      <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, color: palette.accent }}>
+        {headline}
       </p>
-      <p
-        className="text-sm leading-relaxed pt-1"
-        style={{ color: C.brown, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px' }}
-      >
-        {dosha.description}
+
+      {/* Sub-line */}
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: C.brown }}>
+        {sub}
       </p>
+
+      {/* Cancellation note */}
+      {cancellationReason && (
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: C.brownSoft, fontStyle: 'italic' }}>
+          Cancellation: {cancellationReason}
+        </p>
+      )}
+
+      {/* Chalit variant detail */}
+      {chalitVariant && dosha.chalitDescription && (
+        <div className="pt-2 border-t" style={{ borderColor: CA.goldSoft(0.3) }}>
+          <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, color: C.gold, marginBottom: 4 }}>
+            Chalit variant
+          </p>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: C.brownSoft, lineHeight: 1.55 }}>
+            {dosha.chalitDescription}
+          </p>
+        </div>
+      )}
+
+      {/* Library legacy description (only if no classical data) */}
+      {!dosha.rashiHasDosha && dosha.description && (
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: C.brownSoft, fontStyle: 'italic' }}>
+          {dosha.description}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Mangal Dosha — Joint verdict
+// ═══════════════════════════════════════════════════════════════
+
+function MangalJointVerdict({ doshaA, doshaB }: { doshaA: any; doshaB: any }) {
+  const aManglik = Boolean(doshaA.rashiHasDosha ?? doshaA.hasDosha) && !doshaA.isCancelled;
+  const bManglik = Boolean(doshaB.rashiHasDosha ?? doshaB.hasDosha) && !doshaB.isCancelled;
+
+  let title = 'Both charts clear';
+  let body = 'Neither native carries classical Mangal Dosha. No remedy is strictly required. If the couple wishes to be traditional, a simple Ganesha or Hanuman puja before the wedding is customary and well-regarded.';
+
+  if (aManglik && bManglik) {
+    title = 'Both Manglik — traditional cancellation';
+    body = "Both charts carry classical Mangal Dosha. The classical texts consider this a mutual cancellation — the two Marses absorb each other's heat. This is considered auspicious, not alarming.";
+  } else if (aManglik || bManglik) {
+    title = 'One partner carries the dosha';
+    body = "One chart carries classical Mangal Dosha; the other is clear. Classical remedies apply: Kumbh Vivah (symbolic marriage to a pot before the wedding), Hanuman Chalisa on Tuesdays, and Maha Mrityunjaya japa. In many traditions, the union proceeds with these remedies and careful attention to the 7th house in the Manglik partner's chart.";
+  } else if (doshaA.chalitHasDosha || doshaB.chalitHasDosha) {
+    title = 'Both clear in Rashi · Chalit variant only';
+    body = 'Neither chart shows classical (Rashi-based) Mangal Dosha. One or both charts carry a mild Chalit-based variant. Most traditions weigh this lightly.';
+  }
+
+  return (
+    <div className="rounded-2xl p-6 md:p-7 max-w-3xl mx-auto space-y-3" style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.4)}` }}>
+      <p className="text-[10px] uppercase tracking-[0.3em] font-semibold" style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}>
+        The joint reading
+      </p>
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '18px', fontWeight: 700, color: C.brown }}>
+        {title}
+      </p>
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: C.brown, lineHeight: 1.65 }}>
+        {body}
+      </p>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Knowledge Base
+// ═══════════════════════════════════════════════════════════════
+
+function KnowledgePanel() {
+  const [open, setOpen] = useState(false);
+  const entries = [
+    KNOWLEDGE_BASE.gunaMilan,
+    KNOWLEDGE_BASE.scoreInterpretation,
+    KNOWLEDGE_BASE.doshas,
+    KNOWLEDGE_BASE.methodology,
+  ];
+
+  return (
+    <div className="rounded-2xl" style={{ background: C.ivory, border: `1px solid ${CA.goldSoft(0.4)}` }}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full px-6 py-4 flex items-center justify-between gap-3 text-left"
+      >
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.3em] font-semibold" style={{ color: C.gold, fontFamily: "'Inter', system-ui, sans-serif" }}>
+            Knowledge Base
+          </p>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '18px', fontWeight: 700, color: C.brown, marginTop: 4 }}>
+            About this analysis
+          </p>
+        </div>
+        <span style={{ color: C.brownSoft, fontSize: '18px' }}>{open ? '▴' : '▾'}</span>
+      </button>
+      {open && (
+        <div className="px-6 py-4 space-y-5 border-t" style={{ borderColor: CA.goldSoft(0.3) }}>
+          {entries.map((e) => (
+            <div key={e.title} className="space-y-1.5">
+              <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: C.gold }}>
+                {e.title}
+              </p>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: C.brown, lineHeight: 1.65 }}>
+                {e.body}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -3,24 +3,23 @@ import { useChartStyleStore } from '@/features/chart/lib/useChartStyle';
 import type { ChartHouse } from '@/features/chart/types';
 import { MANUSCRIPT as C, MANUSCRIPT_ALPHA as CA } from '../lib/manuscript-colors';
 
-// ─── Manuscript palette ─────────────────────────────────────
+// --- Manuscript palette --------------------------------------------------
 
-
-// ─── Primary Chart Card ─────────────────────────────────────
-// Used for D1 Rashi and D9 Navamsha — the foundational pair.
+// --- Primary Chart Card --------------------------------------------------
+// Used for D1 Rashi and D9 Navamsha - the foundational pair.
 
 interface PrimaryChartCardProps {
   code: string;              // "D1", "D9"
   name: string;              // "Rashi", "Navamsha"
-  devanagari?: string;       // "राशि", "नवांश"
-  subtitle: string;          // "Body · Personality · Life Path"
+  devanagari?: string;       // e.g. '\u0930\u093E\u0936\u093F', '\u0928\u0935\u093E\u0902\u0936'
+  subtitle: string;          // "Body - Personality - Life Path"
   intro: string;             // 2-sentence introduction
   lagna: string;
   lagnaDegree?: string;
   useFor: string[];
   houses: ChartHouse[];
   chartSize?: number;
-  accent?: boolean;          // D1 gets this — a mark of being the root chart
+  accent?: boolean;          // D1 gets this - a mark of being the root chart
 }
 
 export function PrimaryChartCard({
@@ -46,7 +45,7 @@ export function PrimaryChartCard({
         background: `linear-gradient(180deg, ${C.ivory} 0%, ${C.ivoryDeep} 100%)`,
       }}
     >
-      {/* ─── Header ─── */}
+      {/* Header */}
       <div
         className="px-6 py-5"
         style={{ borderBottom: `1px solid ${CA.goldSoft(0.28)}` }}
@@ -106,7 +105,7 @@ export function PrimaryChartCard({
         </p>
       </div>
 
-      {/* ─── Chart ─── */}
+      {/* Chart */}
       <div className="flex justify-center py-6 px-4">
         <VedicChart
           size={chartSize}
@@ -116,7 +115,7 @@ export function PrimaryChartCard({
         />
       </div>
 
-      {/* ─── Lagna line ─── */}
+      {/* Lagna line */}
       <div
         className="px-6 py-3 flex items-baseline justify-between gap-3"
         style={{ borderTop: `1px solid ${CA.goldSoft(0.20)}` }}
@@ -160,7 +159,7 @@ export function PrimaryChartCard({
         </span>
       </div>
 
-      {/* ─── Intro + Use for ─── */}
+      {/* Intro + Use for */}
       <div
         className="px-6 pt-5 pb-6 space-y-4 mt-auto"
         style={{ borderTop: `1px solid ${CA.goldSoft(0.20)}` }}
@@ -193,8 +192,15 @@ export function PrimaryChartCard({
           <ul className="space-y-1">
             {useFor.map((u) => (
               <li key={u} className="flex items-start gap-2">
-                <span style={{ color: C.gold, fontSize: '10px', marginTop: 3, lineHeight: 1 }}>
-                  ◆
+                <span
+                  style={{
+                    color: C.gold,
+                    fontSize: '10px',
+                    marginTop: 3,
+                    lineHeight: 1,
+                  }}
+                >
+                  {'\u2726'}
                 </span>
                 <span
                   style={{
@@ -215,13 +221,13 @@ export function PrimaryChartCard({
   );
 }
 
-// ─── Reference Chart Card ───────────────────────────────────
-// Used for Chandra and Surya Kundlis — the lens views.
+// --- Reference Chart Card ------------------------------------------------
+// Used for Chandra and Surya Kundlis - the lens views.
 
 interface ReferenceChartCardProps {
   name: string;              // "Chandra Kundli", "Surya Kundli"
-  devanagari?: string;       // "चन्द्र कुण्डली"
-  subtitle: string;          // "Moon Chart · Mind"
+  devanagari?: string;       // e.g. '\u091A\u0928\u094D\u0926\u094D\u0930 \u0915\u0941\u0923\u094D\u0921\u0932\u0940'
+  subtitle: string;          // "Moon Chart - Mind"
   lagna: string;
   lagnaDegree?: string;
   tags: string[];            // ["Transits", "Mind", "Psychology"]
@@ -249,7 +255,7 @@ export function ReferenceChartCard({
         background: C.ivory,
       }}
     >
-      {/* ─── Header ─── */}
+      {/* Header */}
       <div className="px-5 py-4" style={{ borderBottom: `1px solid ${CA.goldSoft(0.20)}` }}>
         <div className="flex items-baseline justify-between gap-3">
           <p
@@ -293,7 +299,7 @@ export function ReferenceChartCard({
         </p>
       </div>
 
-      {/* ─── Chart ─── */}
+      {/* Chart */}
       <div className="flex justify-center py-4 px-4">
         <VedicChart
           size={chartSize}
@@ -303,7 +309,7 @@ export function ReferenceChartCard({
         />
       </div>
 
-      {/* ─── Footer ─── */}
+      {/* Footer */}
       <div
         className="px-5 py-3 space-y-2.5 mt-auto"
         style={{ borderTop: `1px solid ${CA.goldSoft(0.20)}` }}

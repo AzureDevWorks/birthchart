@@ -1,4 +1,4 @@
-﻿export interface SnapshotTileProps {
+export interface SnapshotTileProps {
   label: string;
   value: string;
   subtitle?: string;

@@ -1,4 +1,4 @@
-﻿import { RASHI_GLYPHS, RASHI_LORDS, PLANET_GLYPHS } from '../lib/glyphs';
+import { RASHI_GLYPHS, RASHI_LORDS, PLANET_GLYPHS } from '../lib/glyphs';
 import { HOUSE_NAMES_EN } from '../lib/glyphs';
 
 interface HouseMapSectionProps {

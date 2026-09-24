@@ -1,4 +1,4 @@
-﻿import type { GeocoderPort, PlaceSearchResult } from '@/domain/geo/port';
+import type { GeocoderPort, PlaceSearchResult } from '@/domain/geo/port';
 
 interface PhotonFeature {
   properties: {

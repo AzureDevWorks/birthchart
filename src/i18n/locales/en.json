@@ -5,6 +5,7 @@
                 "print":  "Print"
             },
     "common":  {
+        "regenerate": "Regenerate",
                    "change":  "Change",
                    "reset":  "Reset",
                    "loading":  "Loading...",
@@ -39,6 +40,11 @@
                   "approximateBS":  "≈ B.S. {{bs}}"
               },
     "dashboard":  {
+        "allDone": "All ten readings composed.",
+        "until": "until",
+        "noAfflictions": "No Saturn or Chandra afflictions active today.",
+        "dailyRashi": {
+          "janmaRashi": "Janma Rashi", "title": "Today's Rashi", "composing": "Composing today's rashi…" },
                       "title":  "KundaliYatra Dashboard",
                       "changeDetails":  "Change Birth Details",
                       "ascendant":  "Ascendant (Lagna)",
@@ -54,7 +60,8 @@
                      "palette":  "Color palette",
                      "light":  "Light",
                      "dark":  "Dark",
-                     "system":  "System"
+                     "system":  "System",
+                     "theme":  "Theme"
                  },
     "chart":  {
                   "title":  "Birth Chart (D1)",
@@ -104,7 +111,7 @@
                      "anchorsTitle":  "Body, Mind, Soul",
                      "binduEyebrow":  "Ashtakavarga",
                      "binduTitle":  "The Bindu Grid",
-                     "binduHint":  "Every planet votes on every house. This is where the chart agrees with itself — and where it doesn’t."
+                     "binduHint":  "Every planet votes on every house. This is where the chart agrees with itself — and where it doesn't."
                  },
     "coreIdentity":  {
                          "chandraSub":  "The mind and inner world",
@@ -167,6 +174,7 @@
                  "nakshatra":  "Birth Nakshatra"
              },
     "nav":  {
+        "home": "Home",
                 "chart":  "Chart",
                 "panchang":  "Panchang",
                 "gochar":  "Gochar",
@@ -322,7 +330,7 @@
                          "weak":  "Weak (2-3)",
                          "veryWeak":  "Very Weak (0-1)",
                          "readingTitle":  "How to read the grid",
-                         "readingBody":  "Each planet contributes bindus to each house — its willingness to support that house’s affairs. Read a column top-to-bottom: when several planets agree, the house gives materially. When they disagree, effort is required. The SAV row is the sum.",
+                         "readingBody":  "Each planet contributes bindus to each house — its willingness to support that house's affairs. Read a column top-to-bottom: when several planets agree, the house gives materially. When they disagree, effort is required. The SAV row is the sum.",
                          "strongestHouses":  "Strongest Houses",
                          "weakestHouses":  "Weakest Houses",
                          "strongestLine":  "The first, sixth, and tenth houses of this chart carry exceptional support — areas where fortune arrives with little resistance.",
@@ -349,5 +357,37 @@
                      "doshaEyebrow":  "Mangal Dosha",
                      "doshaTitle":  "Mars Check",
                      "doshaHint":  "Mangal Dosha is a classical caution for Mars in the 1st, 2nd, 4th, 7th, 8th, or 12th house. Modern practice weighs cancellations carefully."
-                 }
+                 },
+    "userMenu":  {
+        "manageProfiles": "Manage Profiles",
+                     "settings":  "Settings",
+                     "changeBirth":  "Change Birth Details",
+                     "print":  "Print / Save as PDF",
+                     "clearProfile":  "Clear Profile",
+                     "profileCleared":  "Profile cleared.",
+                     "changedBirthDetails":  "Enter new birth details.",
+                     "user":  "Profile",
+                     "aiSettings":  "AI Settings",
+                     "aiReading":  "Full Chart Reading",
+                     "yourReading":  "Your Vedic Reading"
+                 },
+    "aiSettings":  {
+                       "eyebrow":  "Configuration",
+                       "title":  "AI Settings",
+                       "subtitle":  "Connect an AI provider to unlock narrative synthesis, personalized readings, and Q\u0026A. Keys are stored only in this browser — never sent to our servers.",
+                       "securityTitle":  "How your key is stored",
+                       "securityBody":  "Your API key is saved in your browser local storage and sent directly from your browser to the AI provider. It never touches our servers. This means you should not use a production key on a shared computer.",
+                       "providersEyebrow":  "Providers",
+                       "providersTitle":  "Connect a Provider",
+                       "providersHint":  "Pick one provider to power AI features. You can switch anytime — the active provider is used for all generation.",
+                       "apiKey":  "API Key",
+                       "model":  "Preferred Model",
+                       "testConnection":  "Test Connection",
+                       "setActive":  "Set Active",
+                       "getKey":  "Get a key",
+                       "clear":  "Clear",
+                       "clearAll":  "Clear all AI settings",
+                       "clearAllHint":  "Removes all API keys from this browser.",
+                       "clearAllButton":  "Clear All"
+                   }
 }
