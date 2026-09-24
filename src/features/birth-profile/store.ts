@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { BirthData, ProfileRelation } from '@/domain/astrology/birth-data';
+import { removeStoredKundli } from '@/lib/kundli-cache-storage';
 
 const STORE_VERSION = 2;
 
@@ -58,6 +59,11 @@ export const useBirthStore = create<BirthStore>()(
         set((s) => {
           const existing = s.profiles[id];
           if (!existing) return s;
+          const birthChanged =
+            (patch.localDate !== undefined && patch.localDate !== existing.localDate) ||
+            (patch.localTime !== undefined && patch.localTime !== existing.localTime) ||
+            (patch.place !== undefined && patch.place.id !== existing.place.id);
+          if (birthChanged) { try { removeStoredKundli(existing); } catch { /* noop */ } }
           return {
             profiles: {
               ...s.profiles,

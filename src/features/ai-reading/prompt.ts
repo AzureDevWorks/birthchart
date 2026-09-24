@@ -803,12 +803,14 @@ interpretation written from supplied evidence and traditional principles.
  * referenceMaterial is optional and can be supplied by an external
  * retrieval/reference pipeline.
  */
+export interface ComposedPrompt { system: string; user: string; }
+
 export function composeReadingPrompt(
   category: ReadingCategory,
   jsonPayload: string,
   currentTransitsPayload?: string,
   referenceMaterial?: string
-): string {
+): ComposedPrompt {
   const template = buildTemplate(category);
   const templateBlock = renderTemplate(template);
 
@@ -967,9 +969,5 @@ must be exactly one sentence beginning with ॐ and nothing may
 follow it.
 `;
 
-  return `${SYSTEM_PROMPT}
-
-══════════════════════════════════════════════════════════════
-${body}
-`;
+  return { system: SYSTEM_PROMPT, user: body };
 }

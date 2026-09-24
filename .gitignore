@@ -80,3 +80,6 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+# Timestamped backup folders from fix-gaps scripts
+.fix-backup-*/
+.fix-gaps*-backup-*/

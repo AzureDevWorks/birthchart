@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { VedicChart } from '@/features/chart/components/VedicChart';
-import { buildChartHouses, buildVargaHouses } from '@/features/chart/lib/adapters';
+import { useChartHouses } from '@/features/chart/lib/useChartHouses';
 import { VARGA_INFO, VARGA_ORDER } from '../lib/varga-info';
 import { cn } from '@/lib/utils';
 
@@ -16,20 +16,8 @@ export function DivisionalChartsSection({ kundli }: DivisionalChartsSectionProps
     return VARGA_ORDER.filter((v) => v === 'd1' || present.includes(v));
   }, [kundli]);
 
-  const abbrResolver = useMemo(
-    () => (planet: string) => {
-      if (planet === 'Ascendant') return 'Asc';
-      return planet.slice(0, 2);
-    },
-    []
-  );
 
-  const activeHouses = useMemo(() => {
-    if (activeVarga === 'd1') {
-      return buildChartHouses(kundli, { resolveAbbr: abbrResolver });
-    }
-    return buildVargaHouses(kundli, activeVarga, { resolveAbbr: abbrResolver });
-  }, [activeVarga, kundli, abbrResolver]);
+  const activeHouses = useChartHouses(kundli, activeVarga);
 
   const info = VARGA_INFO[activeVarga];
 

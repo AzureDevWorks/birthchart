@@ -12,8 +12,10 @@ export interface AiModel {
 
 export interface GenerateOptions {
   prompt: string;
+  system?: string;
   modelId: string;
   apiKey: string;
+  signal?: AbortSignal;
   extras?: {
     tone?: string;
     numberOfWord?: number;
@@ -61,12 +63,12 @@ const gemini: AiProvider = {
     { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', tier: 'standard' },
     { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', tier: 'cheap' },
   ],
-  buildRequest: ({ prompt, modelId, apiKey }) => ({
+  buildRequest: ({ prompt, system, modelId, apiKey }) => ({
     url: `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent`,
     init: {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+      body: JSON.stringify({ systemInstruction: system ? { parts: [{ text: system }] } : undefined, contents: [{ parts: [{ text: prompt }] }] }),
     },
   }),
   parseResponse: (j) => j?.candidates?.[0]?.content?.parts?.[0]?.text ?? '',
@@ -90,14 +92,14 @@ const groq: AiProvider = {
     { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', tier: 'cheap' },
     { id: 'gemma2-9b-it', name: 'Gemma 2 9B', tier: 'cheap' },
   ],
-  buildRequest: ({ prompt, modelId, apiKey }) => ({
+  buildRequest: ({ prompt, system, modelId, apiKey }) => ({
     url: 'https://api.groq.com/openai/v1/chat/completions',
     init: {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: modelId,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [...(system ? [{ role: 'system' as const, content: system }] : []), { role: 'user' as const, content: prompt }],
       }),
     },
   }),
@@ -120,14 +122,14 @@ const mistral: AiProvider = {
     { id: 'mistral-large-latest', name: 'Mistral Large', note: 'Highest quality', tier: 'premium' },
     { id: 'open-mistral-nemo', name: 'Mistral Nemo', tier: 'cheap' },
   ],
-  buildRequest: ({ prompt, modelId, apiKey }) => ({
+  buildRequest: ({ prompt, system, modelId, apiKey }) => ({
     url: 'https://api.mistral.ai/v1/chat/completions',
     init: {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: modelId,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [...(system ? [{ role: 'system' as const, content: system }] : []), { role: 'user' as const, content: prompt }],
       }),
     },
   }),
@@ -154,7 +156,7 @@ const openRouter: AiProvider = {
     { id: 'meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B', tier: 'cheap' },
     { id: 'deepseek/deepseek-chat', name: 'DeepSeek Chat', tier: 'cheap' },
   ],
-  buildRequest: ({ prompt, modelId, apiKey }) => ({
+  buildRequest: ({ prompt, system, modelId, apiKey }) => ({
     url: 'https://openrouter.ai/api/v1/chat/completions',
     init: {
       method: 'POST',
@@ -166,7 +168,7 @@ const openRouter: AiProvider = {
       },
       body: JSON.stringify({
         model: modelId,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [...(system ? [{ role: 'system' as const, content: system }] : []), { role: 'user' as const, content: prompt }],
       }),
     },
   }),
@@ -189,14 +191,14 @@ const deepseek: AiProvider = {
     { id: 'deepseek-chat', name: 'DeepSeek Chat', note: 'General purpose', tier: 'cheap' },
     { id: 'deepseek-reasoner', name: 'DeepSeek Reasoner', note: 'Chain-of-thought', tier: 'standard' },
   ],
-  buildRequest: ({ prompt, modelId, apiKey }) => ({
+  buildRequest: ({ prompt, system, modelId, apiKey }) => ({
     url: 'https://api.deepseek.com/v1/chat/completions',
     init: {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: modelId,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [...(system ? [{ role: 'system' as const, content: system }] : []), { role: 'user' as const, content: prompt }],
       }),
     },
   }),
@@ -220,7 +222,7 @@ const anthropic: AiProvider = {
     { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5', note: 'Balanced', tier: 'standard' },
     { id: 'claude-opus-4-5-20251101', name: 'Claude Opus 4.5', note: 'Highest quality', tier: 'premium' },
   ],
-  buildRequest: ({ prompt, modelId, apiKey }) => ({
+  buildRequest: ({ prompt, system, modelId, apiKey }) => ({
     url: 'https://api.anthropic.com/v1/messages',
     init: {
       method: 'POST',
@@ -233,7 +235,8 @@ const anthropic: AiProvider = {
       body: JSON.stringify({
         model: modelId,
         max_tokens: 4096,
-        messages: [{ role: 'user', content: prompt }],
+        system: system ?? undefined,
+        messages: [...(system ? [{ role: 'system' as const, content: system }] : []), { role: 'user' as const, content: prompt }],
       }),
     },
   }),
@@ -264,14 +267,14 @@ const openai: AiProvider = {
     { id: 'gpt-4.1-mini', name: 'GPT-4.1 Mini', tier: 'cheap' },
     { id: 'gpt-4.1', name: 'GPT-4.1', tier: 'standard' },
   ],
-  buildRequest: ({ prompt, modelId, apiKey }) => ({
+  buildRequest: ({ prompt, system, modelId, apiKey }) => ({
     url: 'https://api.openai.com/v1/chat/completions',
     init: {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: modelId,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [...(system ? [{ role: 'system' as const, content: system }] : []), { role: 'user' as const, content: prompt }],
       }),
     },
   }),
@@ -405,7 +408,7 @@ export async function generateWithProvider(
 
   try {
     const { url, init } = provider.buildRequest(opts);
-    const res = await fetch(url, init);
+    const res = await fetch(url, { ...init, signal: opts.signal });
     const json = await res.json().catch(() => ({}));
 
     if (!res.ok) {
@@ -429,7 +432,9 @@ export async function generateWithProvider(
     if (!text) return { ok: false, error: 'Response was empty.', providerId };
     return { ok: true, text, providerId };
   } catch (e) {
-    return { ok: false, error: (e as Error).message, providerId };
+    const err = e as Error;
+    if (err.name === 'AbortError') return { ok: false, error: 'Generation cancelled.', providerId };
+    return { ok: false, error: err.message, providerId };
   }
 }
 
@@ -439,6 +444,8 @@ export async function generateWithProvider(
 
 export interface FallbackOptions {
   prompt: string;
+  system?: string;
+  signal?: AbortSignal;
   extras?: GenerateOptions['extras'];
   /** Ordered list of provider IDs (primary first) */
   order: string[];
@@ -455,6 +462,9 @@ export async function generateWithFallback(opts: FallbackOptions): Promise<Fallb
   const attempts: FallbackResult['attempts'] = [];
 
   for (const providerId of opts.order) {
+    if (opts.signal?.aborted) {
+      return { ok: false, error: 'Cancelled.', providerId: '', attempts };
+    }
     const config = opts.configs[providerId];
     if (!config?.apiKey) continue;
 
@@ -464,6 +474,8 @@ export async function generateWithFallback(opts: FallbackOptions): Promise<Fallb
     const modelId = config.preferredModel ?? provider.models[0]?.id ?? '';
     const res = await generateWithProvider(providerId, {
       prompt: opts.prompt,
+      system: opts.system,
+      signal: opts.signal,
       modelId,
       apiKey: config.apiKey,
       extras: opts.extras,

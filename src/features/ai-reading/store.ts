@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { BirthData } from '@/domain/astrology/birth-data';
@@ -309,18 +310,20 @@ export function useLibraryForProfile(
   profile: BirthData | null
 ): Record<string, ReadingRecord> {
   const records = useReadingStore((s) => s.records);
-  if (!profile) return {};
-  const hash = hashProfile(profile);
+  const hash = profile ? hashProfile(profile) : null;
 
-  const out: Record<string, ReadingRecord> = {};
-  for (const r of Object.values(records)) {
-    if (r.profileHash !== hash) continue;
-    const existing = out[r.categoryId];
-    if (!existing || new Date(r.generatedAt) > new Date(existing.generatedAt)) {
-      out[r.categoryId] = r;
+  return useMemo(() => {
+    if (!hash) return {};
+    const out: Record<string, ReadingRecord> = {};
+    for (const r of Object.values(records)) {
+      if (r.profileHash !== hash) continue;
+      const existing = out[r.categoryId];
+      if (!existing || r.generatedAt > existing.generatedAt) {
+        out[r.categoryId] = r;
+      }
     }
-  }
-  return out;
+    return out;
+  }, [records, hash]);
 }
 
 // ────────────────────────────────────────────────────────────────────────

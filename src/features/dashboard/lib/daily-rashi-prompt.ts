@@ -3,11 +3,7 @@ import type { UserLocation } from '@/lib/user-location';
 import type { GocharAnalysis } from '@/infrastructure/astrology/gochar.adapter';
 import type { PanchangData } from '@/infrastructure/astrology/panchang.adapter';
 
-export const DAILY_RASHI_PROMPT_VERSION = '2.0.0';
-
-// ������������������������������������������������������������������������
-// Payload - unchanged. Compact, verified, no derivation left to the AI.
-// ������������������������������������������������������������������������
+export const DAILY_RASHI_PROMPT_VERSION = '2.0.1';
 
 export function buildDailyRashiPayload(
   profile: BirthData,
@@ -18,8 +14,7 @@ export function buildDailyRashiPayload(
 ): string {
   const moon = kundli?.planets?.Moon ?? {};
   const todayMoon = gochar.planets?.Moon;
-  const firstName =
-    profile.profileName.trim().split(/\s+/)[0] ?? profile.profileName;
+  const firstName = profile.profileName.trim().split(/\s+/)[0] ?? profile.profileName;
 
   const transits = Object.values(gochar.planets)
     .map((p) => ({
@@ -69,20 +64,16 @@ export function buildDailyRashiPayload(
     verdict: gochar.overallVerdict,
   };
 
-  return JSON.stringify(payload, null, 2);
+  return JSON.stringify(payload);
 }
-
-// ������������������������������������������������������������������������
-// System prompt - strictly JSON, strictly short.
-// ������������������������������������������������������������������������
 
 export const DAILY_RASHI_SYSTEM_PROMPT = `You are a classical Jyotishi composing today's Rashi Phala - a brief transit-based forecast for the native's Janma Rashi (Chandra Rashi) - in the living tradition of Vedic astrology.
 
-Gochara phala is always read FROM the Janma Rashi - the natal Moon sign - never the Lagna. A planet transiting a favorable house from Chandra grants its benefic effects to the native; the same planet in an unfavorable house asks for caution.
+Gochara phala is always read FROM the Janma Rashi - the natal Moon sign - never the Lagna.
 
 OUTPUT FORMAT - READ CAREFULLY.
 
-Return ONLY a single JSON object. No prose. No markdown fences. No backticks. No text before or after. The object has exactly these three keys:
+Return ONLY a single JSON object. No prose. No markdown fences. No backticks. The object has exactly these three keys:
 
 {
   "headline": "6-12 words - the shape of the day",
@@ -92,33 +83,23 @@ Return ONLY a single JSON object. No prose. No markdown fences. No backticks. No
 
 RULES
 
-1. The 'headline' names the single strongest transit affecting today. It must reference the specific planet and the house from the natal Moon. Example: "Mars ignites your 3rd - bold speech wins today."
+1. The 'headline' names the single strongest transit affecting today, referencing planet and house from natal Moon.
 
-2. The 'action' is ONE physical act the native can do today, not a mood, not a feeling. Not "be patient." Say: "Wait until the afternoon to send the email."
+2. The 'action' is ONE physical act, not a mood.
 
-3. The 'avoid' is ONE specific act to refrain from today. Not "avoid conflict." Say: "Signing contracts before noon."
+3. The 'avoid' is ONE specific act to refrain from.
 
-4. Every field must reference a value present in the JSON below. Never invent positions, nakshatras, dashas, or dashas.
+4. Every field must reference a value present in the JSON. Never invent positions.
 
-5. Total across all three fields must not exceed 35 words. Nothing more.
+5. Total across all three fields must not exceed 35 words.
 
-6. If a field would require data the JSON does not contain, write a shorter, more general version of that field - but never speculate about missing chart factors.
+6. No emoji. No markdown. No benediction. Second person or imperative.`;
 
-7. Do not open with the word "Today". Do not close with "good luck" or any benediction. The headline is a statement, not a greeting.
+export interface ComposedDailyRashi { system: string; user: string; }
 
-8. Address the native in second person ("you", "your") or imperative.
-
-9. No emoji. No asterisks. No markdown of any kind inside the JSON values.
-
-Tone: a Jyotishi speaking to a client. Warm, precise, unsentimental. Sanskrit terms may appear in the headline when natural, always with their meaning in context.`;
-
-export function composeDailyRashiPrompt(jsonPayload: string): string {
-  return `${DAILY_RASHI_SYSTEM_PROMPT}
-
-���������������������������������������������������������������
-NATIVE & DATA - VERIFIED, DO NOT RECOMPUTE
-���������������������������������������������������������������
-${jsonPayload}
-
-Return the JSON object now. Nothing else.`;
+export function composeDailyRashiPrompt(jsonPayload: string): ComposedDailyRashi {
+  return {
+    system: DAILY_RASHI_SYSTEM_PROMPT,
+    user: `NATIVE & DATA - VERIFIED, DO NOT RECOMPUTE\n\n${jsonPayload}\n\nReturn the JSON object now. Nothing else.`,
+  };
 }

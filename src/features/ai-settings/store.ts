@@ -20,8 +20,19 @@ export interface AiSettingsState {
   clearAll: () => void;
 }
 
-const STORE_VERSION = 4;
+const STORE_VERSION = 5;
 const EMPTY_CONFIG: ProviderConfig = Object.freeze({ apiKey: '' });
+const SESSION_PREFIX = 'kundaliyatra-ai-key:';
+
+function safeSessionGet(key: string): string | null {
+  try { return sessionStorage.getItem(key); } catch { return null; }
+}
+function safeSessionSet(key: string, value: string): void {
+  try {
+    if (value) sessionStorage.setItem(key, value);
+    else sessionStorage.removeItem(key);
+  } catch { /* private mode */ }
+}
 
 export const useAiSettings = create<AiSettingsState>()(
   persist(
@@ -30,13 +41,28 @@ export const useAiSettings = create<AiSettingsState>()(
       providerOrder: [],
 
       setApiKey: (providerId, key) =>
-        set((s) => ({
-          providers: { ...s.providers, [providerId]: { ...(s.providers[providerId] ?? { apiKey: '' }), apiKey: key } },
-        })),
+        set((s) => {
+          safeSessionSet(SESSION_PREFIX + providerId, key);
+          return {
+            providers: {
+              ...s.providers,
+              [providerId]: {
+                ...(s.providers[providerId] ?? { apiKey: '' }),
+                apiKey: key,
+              },
+            },
+          };
+        }),
 
       setPreferredModel: (providerId, modelId) =>
         set((s) => ({
-          providers: { ...s.providers, [providerId]: { ...(s.providers[providerId] ?? { apiKey: '' }), preferredModel: modelId } },
+          providers: {
+            ...s.providers,
+            [providerId]: {
+              ...(s.providers[providerId] ?? { apiKey: '' }),
+              preferredModel: modelId,
+            },
+          },
         })),
 
       toggleInPool: (providerId) =>
@@ -75,12 +101,21 @@ export const useAiSettings = create<AiSettingsState>()(
 
       clearProvider: (providerId) =>
         set((s) => {
+          safeSessionSet(SESSION_PREFIX + providerId, '');
           const next = { ...s.providers };
           delete next[providerId];
           return { providers: next, providerOrder: s.providerOrder.filter((id) => id !== providerId) };
         }),
 
-      clearAll: () => set({ providers: {}, providerOrder: [] }),
+      clearAll: () => {
+        try {
+          for (let i = sessionStorage.length - 1; i >= 0; i--) {
+            const k = sessionStorage.key(i);
+            if (k && k.startsWith(SESSION_PREFIX)) sessionStorage.removeItem(k);
+          }
+        } catch { /* ignore */ }
+        set({ providers: {}, providerOrder: [] });
+      },
     }),
     {
       name: 'kundaliyatra-ai-settings',
@@ -91,9 +126,29 @@ export const useAiSettings = create<AiSettingsState>()(
           const oldActive = state?.activeProviderId ?? null;
           state = { providers: state?.providers ?? {}, providerOrder: oldActive ? [oldActive] : [] };
         }
-        // v3→v4: drop readingDefaults and everything reading-related
         delete state.readingDefaults;
+        if (state?.providers) {
+          for (const id of Object.keys(state.providers)) {
+            if (state.providers[id]?.apiKey) state.providers[id].apiKey = '';
+          }
+        }
         return state;
+      },
+      partialize: (s) => ({
+        providerOrder: s.providerOrder,
+        providers: Object.fromEntries(
+          Object.entries(s.providers).map(([id, cfg]) => [
+            id,
+            { apiKey: '', preferredModel: cfg.preferredModel },
+          ])
+        ),
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        for (const id of Object.keys(state.providers)) {
+          const k = safeSessionGet(SESSION_PREFIX + id);
+          if (k) state.providers[id] = { ...state.providers[id], apiKey: k };
+        }
       },
     }
   )

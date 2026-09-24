@@ -66,6 +66,8 @@ export function AshtakavargaSection({ kundli }: AshtakavargaSectionProps) {
 
   const strongest = sav.strongestHouse;
   const weakest = sav.weakestHouse;
+  const strongestBindus = sav.houseStrengths.find((h: any) => h.house === strongest)?.bindus ?? 0;
+  const weakestBindus = sav.houseStrengths.find((h: any) => h.house === weakest)?.bindus ?? 0;
 
   // ─── Per-planet summary ratings ──────────────────────────
   // Each planet's totalBindus out of ~56 theoretical max
@@ -426,10 +428,7 @@ export function AshtakavargaSection({ kundli }: AshtakavargaSectionProps) {
                 lineHeight: 1.55,
               }}
             >
-              {t('ashtakavarga.strongestLine', {
-                defaultValue:
-                  'The first, sixth, and tenth houses of this chart carry exceptional support — areas where fortune arrives with little resistance.',
-              })}
+              {`House ${roman[strongest - 1]} (${HOUSE_NAMES[strongest - 1]}) receives ${strongestBindus} bindus — the greatest support the chart gives to a single domain.`}
             </p>
           </div>
           <div>
@@ -447,10 +446,7 @@ export function AshtakavargaSection({ kundli }: AshtakavargaSectionProps) {
                 lineHeight: 1.55,
               }}
             >
-              {t('ashtakavarga.weakestLine', {
-                defaultValue:
-                  'The twelfth house stands alone in its demand for effort — what is lost here is lost slowly, and what is built here is built through discipline.',
-              })}
+              {`House ${roman[weakest - 1]} (${HOUSE_NAMES[weakest - 1]}) stands at ${weakestBindus} bindus — the area that asks for conscious effort and steady work.`}
             </p>
           </div>
         </div>

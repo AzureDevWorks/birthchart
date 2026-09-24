@@ -5,7 +5,7 @@ import type { UserLocation } from '@/lib/user-location';
 import { gocharAdapter, type GocharAnalysis } from '@/infrastructure/astrology/gochar.adapter';
 import type { PanchangData } from '@/infrastructure/astrology/panchang.adapter';
 import { hashProfile } from '@/features/ai-reading/store';
-import { generateWithFallback } from '@/features/ai-settings/providers';
+import { generateWithFallback, type FallbackResult } from '@/features/ai-settings/providers';
 import { getAiSettingsSnapshot } from '@/features/ai-settings/store';
 import { countWords } from '@/features/ai-reading/markdown';
 import {
@@ -140,39 +140,24 @@ export function useDailyRashi(
           p,
           loc
         );
-        const prompt = composeDailyRashiPrompt(payload);
-
-        const res = await Promise.race([
-          generateWithFallback({
-            prompt,
+        const { system: sysPrompt, user: userPrompt } = composeDailyRashiPrompt(payload);
+        const ctrl = new AbortController();
+        const timeoutId = setTimeout(() => ctrl.abort(), 45_000);
+        let res: FallbackResult;
+        try {
+          res = await generateWithFallback({
+            system: sysPrompt,
+            prompt: userPrompt,
+            signal: ctrl.signal,
             order: snapshot.providerOrder,
             configs: snapshot.providers,
-            extras: {
-              tone: 'traditional',
-              numberOfWord: 120,
-              language: 'English',
-            },
-          }),
-          new Promise<{
-            ok: false;
-            error: string;
-            providerId: string;
-            attempts: never[];
-          }>((resolve) =>
-            setTimeout(
-              () =>
-                resolve({
-                  ok: false,
-                  error: 'Timed out after 45s.',
-                  providerId: '',
-                  attempts: [],
-                }),
-              45_000
-            )
-          ),
-        ]);
+            extras: { tone: 'traditional', numberOfWord: 120, language: 'English' },
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
 
-        const elapsed = Math.round(performance.now() - t0);
+                const elapsed = Math.round(performance.now() - t0);
 
         if (!res.ok || !res.text) {
           log('generation failed', { elapsed, error: res.error });

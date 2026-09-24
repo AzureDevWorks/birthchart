@@ -17,14 +17,16 @@ interface HeroProps {
 
 // --- Manuscript palette ---------------------------------------------------
 
+import { MANUSCRIPT_ALPHA as CA } from '../lib/manuscript-colors';
+
 const C = {
-  ivory:      'hsl(38 55% 95%)',
-  ivoryDeep:  'hsl(35 45% 90%)',
-  brown:      'hsl(22 35% 18%)',
-  brownSoft:  'hsl(22 25% 40%)',
-  vermilion:  'hsl(6 60% 38%)',
-  gold:       'hsl(38 55% 48%)',
-  goldSoft:   'hsl(38 40% 62%)',
+  ivory:      'hsl(var(--manuscript-ivory))',
+  ivoryDeep:  'hsl(var(--manuscript-ivory-deep))',
+  brown:      'hsl(var(--manuscript-brown))',
+  brownSoft:  'hsl(var(--manuscript-brown-soft))',
+  vermilion:  'hsl(var(--manuscript-vermilion))',
+  gold:       'hsl(var(--manuscript-gold))',
+  goldSoft:   'hsl(var(--manuscript-gold-soft))',
 };
 
 // --- Formatting -----------------------------------------------------------
@@ -172,7 +174,7 @@ export function Hero({ profile, kundli }: HeroProps) {
     <section
       className="relative overflow-hidden rounded-3xl"
       style={{
-        border: `1px solid ${C.goldSoft}44`,
+        border: `1px solid ${CA.goldSoft(0.27)}`,
         background: `linear-gradient(180deg, ${C.ivory} 0%, ${C.ivoryDeep} 100%)`,
       }}
     >
@@ -180,7 +182,7 @@ export function Hero({ profile, kundli }: HeroProps) {
         className="absolute inset-0 pointer-events-none select-none"
         aria-hidden="true"
         style={{
-          backgroundImage: `radial-gradient(circle at 50% 30%, ${C.gold}18 0%, transparent 55%)`,
+          backgroundImage: `radial-gradient(circle at 50% 30%, ${CA.gold(0.09)} 0%, transparent 55%)`,
         }}
       />
 
@@ -192,8 +194,8 @@ export function Hero({ profile, kundli }: HeroProps) {
           style={{
             width: 'clamp(48px, 5vw, 64px)',
             height: 'clamp(48px, 5vw, 64px)',
-            border: `1px solid ${C.gold}55`,
-            boxShadow: `0 0 0 4px ${C.ivoryDeep}, 0 0 0 5px ${C.gold}22`,
+            border: `1px solid ${CA.gold(0.33)}`,
+            boxShadow: `0 0 0 4px ${C.ivoryDeep}, 0 0 0 5px ${CA.gold(0.13)}`,
           }}
         >
           <img src="/ganesh.png" alt="Lord Ganesha" className="w-full h-full object-cover" draggable={false} />
@@ -366,12 +368,12 @@ export function Hero({ profile, kundli }: HeroProps) {
         >
           <span
             className="h-px flex-1"
-            style={{ background: `linear-gradient(to right, transparent, ${C.gold}55, transparent)` }}
+            style={{ background: `linear-gradient(to right, transparent, ${CA.gold(0.33)}, transparent)` }}
           />
           <span className="mx-3" style={{ fontSize: '9px', color: C.gold, lineHeight: 1, opacity: 0.9 }}>{'\u2726'}</span>
           <span
             className="h-px flex-1"
-            style={{ background: `linear-gradient(to left, transparent, ${C.gold}55, transparent)` }}
+            style={{ background: `linear-gradient(to left, transparent, ${CA.gold(0.33)}, transparent)` }}
           />
         </div>
 
@@ -439,7 +441,7 @@ function RashiMedallion({
             ? `radial-gradient(circle at 50% 40%, ${C.ivory}, ${C.ivoryDeep})`
             : C.ivory,
           boxShadow: primary
-            ? `0 0 0 4px ${C.ivoryDeep}, 0 0 0 5px ${C.gold}22, inset 0 0 12px ${C.gold}18`
+            ? `0 0 0 4px ${C.ivoryDeep}, 0 0 0 5px ${CA.gold(0.13)}, inset 0 0 12px ${CA.gold(0.09)}`
             : `inset 0 0 8px ${C.gold}12`,
         }}
       >

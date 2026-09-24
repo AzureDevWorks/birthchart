@@ -4,7 +4,7 @@ import {
 } from '@prisri/jyotish';
 import type { Kundli } from '@prisri/jyotish';
 import type { BirthData } from '@/domain/astrology/birth-data';
-import { prisriJyotish } from './prisri-jyotish.adapter';
+import { getCachedKundli } from '@/lib/kundli-cache';
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -55,8 +55,9 @@ export const matchingAdapter = {
    */
   compare(a: BirthData, b: BirthData): MatchingResult {
     try {
-      const kundliA = prisriJyotish.calculate(a) as unknown as Kundli;
-      const kundliB = prisriJyotish.calculate(b) as unknown as Kundli;
+      const kundliA = getCachedKundli(a) as unknown as Kundli;
+      const kundliB = getCachedKundli(b) as unknown as Kundli;
+      if (!kundliA || !kundliB) throw new MatchingError('Chart calculation failed.');
       return this.compareKundlis(kundliA, kundliB);
     } catch (e) {
       throw new MatchingError(

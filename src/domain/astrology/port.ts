@@ -1,3 +1,6 @@
+// Opaque Kundli type. The library's real shape stays in infrastructure/.
+export type KundliRecord = Record<string, any>;
+
 import type { Kundli, KundliConfig } from '@prisri/jyotish';
 import type { BirthData } from './birth-data';
 

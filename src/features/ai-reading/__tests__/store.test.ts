@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hashProfile, makeReadingKey } from '../store';
+import { hashProfile, makeReadingKey, readingId } from '../store';
 import type { BirthData } from '@/domain/astrology/birth-data';
 
 function makeProfile(overrides: Partial<BirthData> = {}): BirthData {
@@ -87,58 +87,21 @@ describe('hashProfile', () => {
 
 // ─── makeReadingKey ──────────────────────────────────────────────────
 
-describe('makeReadingKey', () => {
-  it('has the expected shape', () => {
+describe('makeReadingKey (deprecated shim)', () => {
+  it('returns the same identity as readingId', () => {
     const p = makeProfile();
-    const key = makeReadingKey(
-      p,
-      'career',
-      '3.0.0',
-      'analytical',
-      'English',
-      2500
-    );
-    const parts = key.split('|');
-    expect(parts).toHaveLength(6);
-    expect(parts[0]).toBe(hashProfile(p));
-    expect(parts[1]).toBe('v3.0.0');
-    expect(parts[2]).toBe('career');
-    expect(parts[3]).toBe('analytical');
-    expect(parts[4]).toBe('English');
-    expect(parts[5]).toBe('2500');
+    const viaKey = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'English', 2500);
+    const viaId = readingId(hashProfile(p), 'career');
+    expect(viaKey).toBe(viaId);
   });
 
-  it('accepts a numeric prompt version', () => {
+  it('is stable across calls', () => {
     const p = makeProfile();
-    const key = makeReadingKey(p, 'career', 2, 'analytical', 'English', 2500);
-    expect(key).toContain('|v2|');
+    expect(makeReadingKey(p, 'career')).toBe(makeReadingKey(p, 'career'));
   });
 
-  it('produces different keys for different categories', () => {
+  it('differs per category', () => {
     const p = makeProfile();
-    const a = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'English', 2500);
-    const b = makeReadingKey(p, 'marriage', '3.0.0', 'analytical', 'English', 2500);
-    expect(a).not.toBe(b);
-  });
-
-  it('produces different keys for different languages', () => {
-    const p = makeProfile();
-    const a = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'English', 2500);
-    const b = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'Nepali', 2500);
-    expect(a).not.toBe(b);
-  });
-
-  it('produces different keys for different lengths', () => {
-    const p = makeProfile();
-    const a = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'English', 2500);
-    const b = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'English', 4000);
-    expect(a).not.toBe(b);
-  });
-
-  it('produces the same key for identical inputs', () => {
-    const p = makeProfile();
-    const a = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'English', 2500);
-    const b = makeReadingKey(p, 'career', '3.0.0', 'analytical', 'English', 2500);
-    expect(a).toBe(b);
+    expect(makeReadingKey(p, 'career')).not.toBe(makeReadingKey(p, 'marriage'));
   });
 });

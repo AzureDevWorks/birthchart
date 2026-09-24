@@ -16,7 +16,7 @@ import {
 import { toast } from 'sonner';
 
 import { useActiveProfile } from '@/features/birth-profile/store';
-import { prisriJyotish } from '@/infrastructure/astrology/prisri-jyotish.adapter';
+import { getCachedKundli } from '@/lib/kundli-cache';
 import { getCategory, CATEGORY_MAP } from './categories';
 import type { ReadingCategoryId } from './categories';
 import { useReadingStore, makeReadingKey, hashProfile } from './store';
@@ -83,14 +83,7 @@ export function ReadingArticleView() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const kundli = useMemo(() => {
-    if (!profile) return null;
-    try {
-      return prisriJyotish.calculate(profile) as any;
-    } catch {
-      return null;
-    }
-  }, [profile]);
+  const kundli = useMemo(() => (profile ? getCachedKundli(profile) : null), [profile]);
 
   const payload = useMemo(() => {
     if (!kundli) return null;
@@ -117,7 +110,7 @@ export function ReadingArticleView() {
 
   const promptStats = useMemo(() => {
     if (!composedPrompt) return null;
-    const chars = composedPrompt.length;
+    const chars = composedPrompt.system.length + composedPrompt.user.length;
     return {
       chars,
       tokens: Math.ceil(chars / 4),
@@ -161,7 +154,7 @@ export function ReadingArticleView() {
       const snapshot = getAiSettingsSnapshot();
       const template = buildTemplate(category);
 
-      let currentPrompt = composedPrompt;
+      let currentPrompt = { system: composedPrompt.system, user: composedPrompt.user };
       let res: FallbackResult | null = null;
       let validation: ReturnType<typeof validateArticle> | null = null;
       let retried = false;
@@ -170,7 +163,8 @@ export function ReadingArticleView() {
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         res = await generateWithFallback({
-          prompt: currentPrompt,
+          system: currentPrompt.system,
+          prompt: currentPrompt.user,
           order: snapshot.providerOrder,
           configs: snapshot.providers,
           extras: {
@@ -209,7 +203,7 @@ export function ReadingArticleView() {
         suffix +=
           '\nRegenerate the entire article with all sections present, no extra sections, and in the exact order specified.';
 
-        currentPrompt = composedPrompt + suffix;
+        currentPrompt = { system: composedPrompt.system, user: composedPrompt.user + suffix };
         retried = true;
       }
 
@@ -263,17 +257,25 @@ export function ReadingArticleView() {
   };
 
   const handleCopy = async () => {
-    if (record) {
+    if (!record) return;
+    try {
       await navigator.clipboard.writeText(record.text);
       toast.success('Copied.');
+    } catch {
+      toast.error('Clipboard unavailable.');
     }
   };
   const handlePrint = () => setTimeout(() => window.print(), 60);
 
   const handleCopyPrompt = async () => {
     if (!composedPrompt) return;
-    await navigator.clipboard.writeText(composedPrompt);
-    toast.success('Prompt copied to clipboard.');
+    const combined = `### SYSTEM\n\n${composedPrompt.system}\n\n### USER\n\n${composedPrompt.user}`;
+    try {
+      await navigator.clipboard.writeText(combined);
+      toast.success('Prompt copied to clipboard.');
+    } catch {
+      toast.error('Clipboard unavailable.');
+    }
   };
 
   if (!profile || !kundli || !payload || !category) {
@@ -882,8 +884,9 @@ export function ReadingArticleView() {
                 color: '#2E1F14',
               }}
             >
-              {composedPrompt ??
-                'Prompt not ready — the chart must be computed before the prompt can be shown.'}
+              {composedPrompt
+                ? `### SYSTEM\n\n${composedPrompt.system}\n\n### USER\n\n${composedPrompt.user}`
+                : 'Prompt not ready \u2014 the chart must be computed before the prompt can be shown.'}
             </pre>
           </div>
 

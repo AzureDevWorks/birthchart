@@ -4,7 +4,7 @@ import { SnapshotTile } from './SnapshotTile';
 function formatDegreeShort(deg?: number, min?: number): string {
   const d = deg ?? 0;
   const m = min ?? 0;
-  return `${d}�${String(m).padStart(2, '0')}?`;
+  return `${d}\u00B0${String(m).padStart(2, '0')}\u2032`;
 }
 
 interface SnapshotStripProps {

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useActiveProfile } from '@/features/birth-profile/store';
-import { prisriJyotish, BirthDataError } from '@/infrastructure/astrology/prisri-jyotish.adapter';
+import { BirthDataError } from '@/infrastructure/astrology/prisri-jyotish.adapter';
+import { getCachedKundli } from '@/lib/kundli-cache';
 import {
   predictionsAdapter,
   PredictionsError,
@@ -32,7 +33,8 @@ export function PredictionsView() {
   const result = useMemo(() => {
     if (!profile) return { data: null, error: null as string | null };
     try {
-      const kundli = prisriJyotish.calculate(profile) as unknown as Record<string, any>;
+      const kundli = getCachedKundli(profile) as unknown as Record<string, any>;
+      if (!kundli) throw new BirthDataError('Chart calculation failed.');
       return {
         data: {
           career: predictionsAdapter.career(kundli),

@@ -1,11 +1,9 @@
 import { useMemo } from 'react';
-import type { Kundli } from '@prisri/jyotish';
+import type { KundliRecord } from '@/domain/astrology/port';
 import { Button } from '@/components/ui/button';
-import {
-  prisriJyotish,
-  BirthDataError,
-} from '@/infrastructure/astrology/prisri-jyotish.adapter';
+import { BirthDataError } from '@/infrastructure/astrology/prisri-jyotish.adapter';
 import { useActiveProfile, useBirthStore } from '../birth-profile/store';
+import { getCachedKundli } from '@/lib/kundli-cache';
 import { BirthProfileForm } from '../birth-profile/components/BirthProfileForm';
 import { ReportOverview } from '@/features/report/components/ReportOverview';
 
@@ -31,10 +29,12 @@ function ReportView({
 
   const { kundli, error } = useMemo(() => {
     try {
-      return { kundli: prisriJyotish.calculate(profile), error: null as string | null };
+      const k = getCachedKundli(profile);
+      if (!k) throw new Error('Chart calculation failed.');
+      return { kundli: k as KundliRecord, error: null as string | null };
     } catch (e) {
       return {
-        kundli: null as Kundli | null,
+        kundli: null as KundliRecord | null,
         error: e instanceof BirthDataError ? e.message : 'Chart calculation failed.',
       };
     }
