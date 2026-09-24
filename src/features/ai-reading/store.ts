@@ -6,7 +6,7 @@ import type {
   ReadingCategoryId,
   ReadingLanguage,
   ReadingTone,
-} from './categories';
+} from './types';
 
 // ────────────────────────────────────────────────────────────────────────
 // Types

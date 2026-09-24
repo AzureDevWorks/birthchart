@@ -1,6 +1,6 @@
 import type { BirthData } from '@/domain/astrology/birth-data';
 import { useReadingStore, hashProfile } from '@/features/ai-reading/store';
-import { CATEGORY_MAP } from '@/features/ai-reading/categories';
+import { listSituations } from '@/ai/core';
 import { useDailyRashiStore } from '@/features/dashboard/lib/daily-rashi-store';
 import type { SectionId } from './sections';
 import type { ReadingEntry } from './pages';
@@ -30,7 +30,10 @@ function collectReadings(profile: BirthData): ReadingEntry[] {
     if ((rec as { profileHash?: string }).profileHash !== hash) continue;
     const categoryId = (rec as { categoryId?: string }).categoryId;
     if (!categoryId) continue;
-    const meta = (CATEGORY_MAP as Record<string, { title?: string; sanskrit?: string }>)[categoryId];
+    const meta = (() => {
+    const found = listSituations().find((x) => x.situation.id === categoryId)?.situation;
+    return found ? { title: found.label, sanskrit: found.meta?.sanskrit } : undefined;
+  })();
     out.push({
       categoryTitle: meta?.title ?? categoryId,
       sanskrit: meta?.sanskrit,
@@ -42,10 +45,16 @@ function collectReadings(profile: BirthData): ReadingEntry[] {
     });
   }
 
-  const order = Object.keys(CATEGORY_MAP);
+  const order = listSituations().map((x) => x.situation.id);
   out.sort((a, b) => {
-    const ai = order.findIndex((k) => (CATEGORY_MAP as any)[k].title === a.categoryTitle);
-    const bi = order.findIndex((k) => (CATEGORY_MAP as any)[k].title === b.categoryTitle);
+    const ai = order.findIndex((k) => {
+    const found = listSituations().find((x) => x.situation.id === k)?.situation;
+    return found?.label === a.categoryTitle;
+  });
+    const bi = order.findIndex((k) => {
+    const found = listSituations().find((x) => x.situation.id === k)?.situation;
+    return found?.label === b.categoryTitle;
+  });
     return ai - bi;
   });
   return out;

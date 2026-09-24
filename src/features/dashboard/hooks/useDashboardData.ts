@@ -5,7 +5,7 @@ import { getCachedKundli } from '@/lib/kundli-cache';
 import { gocharAdapter, type GocharAnalysis } from '@/infrastructure/astrology/gochar.adapter';
 import { calculateNowPanchang, type PanchangData } from '@/infrastructure/astrology/panchang.adapter';
 import { useLibraryForProfile } from '@/features/ai-reading/store';
-import { CATEGORIES } from '@/features/ai-reading/categories';
+import { listSituations } from '@/ai/core';
 
 export interface DashboardData {
   kundli: any | null;
@@ -54,7 +54,7 @@ export function useDashboardData(
 
   const readingsCount = Object.keys(library).length;
   const generatedIds = new Set(Object.keys(library));
-  const next = CATEGORIES.find((c) => !generatedIds.has(c.id));
+  const next = listSituations().map((x) => x.situation).find((s) => !generatedIds.has(s.id));
 
   return {
     kundli: chart.kundli,

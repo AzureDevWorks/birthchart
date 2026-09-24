@@ -1,4 +1,6 @@
-import type { Accent } from './categories';
+export type AccentName =
+  | 'amber' | 'rose' | 'violet' | 'emerald' | 'sky' | 'slate'
+  | 'crimson' | 'indigo' | 'teal' | 'sunset';
 
 export interface AccentStyle {
   accent: string;
@@ -10,7 +12,7 @@ export interface AccentStyle {
   ornament: string;
 }
 
-export const ACCENT_STYLES: Record<Accent, AccentStyle> = {
+export const ACCENT_STYLES: Record<AccentName, AccentStyle> = {
   amber:   { accent: 'hsl(38 55% 42%)',   border: 'hsl(38 55% 42% / 0.25)',   borderSoft: 'hsl(38 55% 42% / 0.12)',   hairline: 'linear-gradient(90deg, hsl(38 65% 55%), hsl(38 55% 42%))',   cardBg: 'linear-gradient(180deg, hsl(38 55% 98%), hsl(38 45% 96%))',   articleBg: 'linear-gradient(180deg, #FBF6EA 0%, #F5EEDF 100%)', ornament: 'hsl(38 55% 48%)' },
   rose:    { accent: 'hsl(346 65% 45%)',  border: 'hsl(346 65% 45% / 0.25)',  borderSoft: 'hsl(346 65% 45% / 0.12)',  hairline: 'linear-gradient(90deg, hsl(346 70% 62%), hsl(346 65% 45%))',  cardBg: 'linear-gradient(180deg, hsl(346 60% 98%), hsl(346 45% 96%))',  articleBg: 'linear-gradient(180deg, #FDF5F6 0%, #F9E9EC 100%)', ornament: 'hsl(346 65% 50%)' },
   violet:  { accent: 'hsl(262 55% 50%)',  border: 'hsl(262 55% 50% / 0.25)',  borderSoft: 'hsl(262 55% 50% / 0.12)',  hairline: 'linear-gradient(90deg, hsl(262 60% 66%), hsl(262 55% 50%))',  cardBg: 'linear-gradient(180deg, hsl(262 50% 98%), hsl(262 40% 96%))',  articleBg: 'linear-gradient(180deg, #F7F5FD 0%, #EEEAF9 100%)', ornament: 'hsl(262 55% 54%)' },
@@ -22,3 +24,9 @@ export const ACCENT_STYLES: Record<Accent, AccentStyle> = {
   teal:    { accent: 'hsl(180 55% 32%)',  border: 'hsl(180 55% 32% / 0.25)',  borderSoft: 'hsl(180 55% 32% / 0.12)',  hairline: 'linear-gradient(90deg, hsl(180 55% 48%), hsl(180 55% 32%))',  cardBg: 'linear-gradient(180deg, hsl(180 40% 98%), hsl(180 30% 96%))',  articleBg: 'linear-gradient(180deg, #F0F9F8 0%, #E1F1EF 100%)', ornament: 'hsl(180 55% 38%)' },
   sunset:  { accent: 'hsl(20 75% 45%)',   border: 'hsl(20 75% 45% / 0.25)',   borderSoft: 'hsl(20 75% 45% / 0.12)',   hairline: 'linear-gradient(90deg, hsl(20 80% 60%), hsl(20 75% 45%))',   cardBg: 'linear-gradient(180deg, hsl(20 70% 98%), hsl(20 55% 96%))',   articleBg: 'linear-gradient(180deg, #FDF6F0 0%, #F9EBE0 100%)', ornament: 'hsl(20 75% 50%)' },
 };
+
+export function resolveAccent(name: string | undefined): AccentStyle {
+  const key = (name ?? 'amber') as AccentName;
+  return ACCENT_STYLES[key] ?? ACCENT_STYLES.amber;
+}
+
