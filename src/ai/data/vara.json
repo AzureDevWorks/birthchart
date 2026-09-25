@@ -1,0 +1,9 @@
+{
+  "0": { "name": "Ravivara",    "planet": "Surya",    "color": "saffron",     "direction": "east",      "theme": "Beginnings, authority, vitality" },
+  "1": { "name": "Somavara",    "planet": "Chandra",  "color": "white",       "direction": "northwest", "theme": "Mind, emotions, nourishment" },
+  "2": { "name": "Mangalavara", "planet": "Mangala",  "color": "red",         "direction": "south",     "theme": "Courage, property, conflict" },
+  "3": { "name": "Budhavara",   "planet": "Budha",    "color": "green",       "direction": "north",     "theme": "Communication, learning, commerce" },
+  "4": { "name": "Guruvara",    "planet": "Guru",     "color": "yellow",      "direction": "northeast", "theme": "Wisdom, dharma, teachers, expansion" },
+  "5": { "name": "Shukravara",  "planet": "Shukra",   "color": "white",       "direction": "southeast", "theme": "Love, beauty, art, comfort" },
+  "6": { "name": "Shanivara",   "planet": "Shani",    "color": "deep blue",   "direction": "west",      "theme": "Discipline, labor, endurance, karma" }
+}

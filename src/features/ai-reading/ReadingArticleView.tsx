@@ -13,6 +13,7 @@ import { resolveAccent } from './accents';
 import { parseArticle, countWords, readingMinutes } from './markdown';
 import { ArticleBody } from './components/ArticleBody';
 import { ArticleTOC } from './components/ArticleTOC';
+import { DailyReadingView } from './DailyReadingView';
 import { OrnamentalDivider } from '@/features/report/primitives/OrnamentalDivider';
 import {
   Dialog,
@@ -27,6 +28,11 @@ export function ReadingArticleView() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
   const profile = useActiveProfile();
+
+  // Structured situations get their own view.
+  if (categoryId === 'daily-reading') {
+    return <DailyReadingView />;
+  }
 
   const resolved = useMemo(() => {
     if (!categoryId) return null;

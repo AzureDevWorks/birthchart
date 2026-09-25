@@ -25,6 +25,9 @@ export interface ReadingVersion {
   text: string;
   wordCount: number;
   generatedAt: string;
+  /** Structured content for non-article readings. Undefined for
+   *  article readings, which carry their content in `text`. */
+  payload?: Record<string, unknown>;
 }
 
 /** One reading, identified by (profileHash, categoryId). Regenerating
@@ -44,7 +47,12 @@ export interface ReadingRecord {
   modelId: string;
 
   // Current content
+  /** Markdown document — used by article readings. Empty string for
+   *  structured readings, which carry their content in `payload`. */
   text: string;
+  /** Structured content — used by structured readings (e.g.
+   *  daily-reading). Undefined for article readings. */
+  payload?: Record<string, unknown>;
   wordCount: number;
   generatedAt: string;
 
@@ -157,6 +165,7 @@ function toVersion(r: ReadingRecord): ReadingVersion {
     text: r.text,
     wordCount: r.wordCount,
     generatedAt: r.generatedAt,
+    payload: r.payload,
   };
 }
 
@@ -167,7 +176,11 @@ export const useReadingStore = create<ReadingStore>()(
 
       save: (incoming) =>
         set((s) => {
-          const id = readingId(incoming.profileHash, incoming.categoryId);
+          const { key, ...rest } = incoming as Omit<
+            ReadingRecord,
+            'history'
+          > & { key?: string };
+          const id = key ?? readingId(incoming.profileHash, incoming.categoryId);
           const existing = s.records[id];
 
           const history = existing
@@ -176,12 +189,6 @@ export const useReadingStore = create<ReadingStore>()(
                 MAX_HISTORY
               )
             : [];
-
-          // Strip the legacy `key` field — identity is (profileHash, categoryId).
-          const { key: _key, ...rest } = incoming as Omit<
-            ReadingRecord,
-            'history'
-          > & { key?: string };
 
           return {
             records: {
@@ -272,6 +279,7 @@ function migrateToV5(persisted: any, fromVersion: number) {
       providerId: current.providerId ?? '',
       modelId: current.modelId ?? '',
       text: current.text ?? '',
+      payload: current.payload,
       wordCount: current.wordCount ?? 0,
       generatedAt: current.generatedAt ?? new Date().toISOString(),
       history: older.slice(0, MAX_HISTORY).map((r) => ({
@@ -283,6 +291,7 @@ function migrateToV5(persisted: any, fromVersion: number) {
         providerId: r.providerId ?? '',
         modelId: r.modelId ?? '',
         text: r.text ?? '',
+        payload: r.payload,
         wordCount: r.wordCount ?? 0,
         generatedAt: r.generatedAt ?? new Date().toISOString(),
       })),

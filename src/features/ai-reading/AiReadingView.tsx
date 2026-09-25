@@ -13,7 +13,9 @@ export function AiReadingView() {
   const navigate = useNavigate();
 
   const items = useMemo(
-    () => listSituations().filter((x) => x.situation.kind === 'article'),
+    () => listSituations().filter(
+      (x) => x.situation.kind === 'article' || x.situation.id === 'daily-reading'
+    ),
     []
   );
 

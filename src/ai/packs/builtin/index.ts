@@ -17,6 +17,7 @@ import remedies from './remedies.json';
 import karmic from './karmic.json';
 import transit from './transit.json';
 import dailyRashi from './daily-rashi.json';
+import dailyReading from './daily-reading.json';
 
 export const BUILTIN_PACKS: PromptPack[] = [
   fullLife as unknown as PromptPack,
@@ -30,6 +31,7 @@ export const BUILTIN_PACKS: PromptPack[] = [
   karmic as unknown as PromptPack,
   transit as unknown as PromptPack,
   dailyRashi as unknown as PromptPack,
+  dailyReading as unknown as PromptPack,
 ];
 
 export const BUILTIN_PACK_MAP: Record<string, PromptPack> =
