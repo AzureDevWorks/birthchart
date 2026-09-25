@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';   // was HashRouter
 import App from './App';
 import './styles/fonts.css';
 import { registerPdfFonts } from './features/report-pdf/fonts';
@@ -15,9 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
       <PaletteProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+     <HashRouter>
+  <App />
+</HashRouter>
       </PaletteProvider>
     </ThemeProvider>
   </React.StrictMode>

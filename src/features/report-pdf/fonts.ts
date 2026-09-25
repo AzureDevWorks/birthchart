@@ -1,3 +1,4 @@
+import { asset } from '@/lib/assets';
 import { Font } from '@react-pdf/renderer';
 
 let registered = false;
@@ -13,32 +14,32 @@ export function registerPdfFonts() {
   Font.register({
     family: 'NotoSerifDevanagari',
     fonts: [
-      { src: '/fonts/NotoSerifDevanagari-Regular.ttf', fontWeight: 'normal' },
-      { src: '/fonts/NotoSerifDevanagari-Bold.ttf',    fontWeight: 'bold'   },
+      { src: asset('fonts/NotoSerifDevanagari-Regular.ttf'), fontWeight: 'normal' },
+      { src: asset('fonts/NotoSerifDevanagari-Bold.ttf'),    fontWeight: 'bold'   },
     ],
   });
 
   Font.register({
     family: 'NotoSansDevanagari',
     fonts: [
-      { src: '/fonts/NotoSansDevanagari-Regular.ttf', fontWeight: 'normal' },
-      { src: '/fonts/NotoSansDevanagari-Bold.ttf',    fontWeight: 'bold'   },
+      { src: asset('fonts/NotoSansDevanagari-Regular.ttf'), fontWeight: 'normal' },
+      { src: asset('fonts/NotoSansDevanagari-Bold.ttf'),    fontWeight: 'bold'   },
     ],
   });
 
   Font.register({
     family: 'TiroDevanagari',
     fonts: [
-      { src: '/fonts/TiroDevanagariSanskrit-Regular.ttf', fontWeight: 'normal' },
-      { src: '/fonts/TiroDevanagariSanskrit-Italic.ttf',  fontWeight: 'normal', fontStyle: 'italic' },
+      { src: asset('fonts/TiroDevanagariSanskrit-Regular.ttf'), fontWeight: 'normal' },
+      { src: asset('fonts/TiroDevanagariSanskrit-Italic.ttf'),  fontWeight: 'normal', fontStyle: 'italic' },
     ],
   });
 
   Font.register({
     family: 'Inter',
     fonts: [
-      { src: '/fonts/Inter-Regular.ttf', fontWeight: 'normal' },
-      { src: '/fonts/Inter-Bold.ttf',    fontWeight: 'bold'   },
+      { src: asset('fonts/Inter-Regular.ttf'), fontWeight: 'normal' },
+      { src: asset('fonts/Inter-Bold.ttf'),    fontWeight: 'bold'   },
     ],
   });
 

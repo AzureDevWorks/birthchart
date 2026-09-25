@@ -8,6 +8,7 @@ import {
 import { PdfChart } from './PdfChart';
 import { styles as s, C, F } from './styles';
 import type { SectionDef } from './sections';
+import { asset } from '@/lib/assets';
 
 // â”€â”€ Special characters â€” always via {CONST}, never literal text â”€â”€
 const DOT    = '\u00b7'; // Â·
@@ -120,7 +121,7 @@ function SectionOpener({
 
 export function CoverPage({ profile }: { profile: BirthData }) {
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const ganeshUrl = origin ? `${origin}/ganesh.png` : null;
+  const ganeshUrl = origin ? `${origin}${asset('ganesh.png')}` : null;
   const generatedAt = new Date();
 
   return (

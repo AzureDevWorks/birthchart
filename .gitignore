@@ -83,3 +83,13 @@ Thumbs.db
 # Timestamped backup folders from fix-gaps scripts
 .fix-backup-*/
 .fix-gaps*-backup-*/
+node_modules
+dist
+dist-ssr
+.vite
+# Editors
+.idea
+# Backups & scan artefacts
+*.bak3-*
+.cleanup-backup-*
+.pages-fix-backup-*/

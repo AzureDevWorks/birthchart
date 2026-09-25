@@ -1,3 +1,5 @@
+import { asset } from '@/lib/assets';
+
 /**
  * Rashi images - English rashi name  static asset URL.
  *
@@ -6,18 +8,18 @@
  */
 
 export const RASHI_IMAGES: Record<string, string> = {
-  Aries:       '/Rashis/mesha.jpeg',
-  Taurus:      '/Rashis/vrishabha.jpeg',
-  Gemini:      '/Rashis/mithuna.jpeg',
-  Cancer:      '/Rashis/karka.jpeg',
-  Leo:         '/Rashis/simha.jpeg',
-  Virgo:       '/Rashis/kanya.jpeg',
-  Libra:       '/Rashis/tula.jpeg',
-  Scorpio:     '/Rashis/vrishchika.jpeg',
-  Sagittarius: '/Rashis/dhanu.jpeg',
-  Capricorn:   '/Rashis/makara.jpeg',
-  Aquarius:    '/Rashis/kumbha.jpeg',
-  Pisces:      '/Rashis/meena.jpeg',
+  Aries:       asset('Rashis/mesha.jpeg'),
+  Taurus:      asset('Rashis/vrishabha.jpeg'),
+  Gemini:      asset('Rashis/mithuna.jpeg'),
+  Cancer:      asset('Rashis/karka.jpeg'),
+  Leo:         asset('Rashis/simha.jpeg'),
+  Virgo:       asset('Rashis/kanya.jpeg'),
+  Libra:       asset('Rashis/tula.jpeg'),
+  Scorpio:     asset('Rashis/vrishchika.jpeg'),
+  Sagittarius: asset('Rashis/dhanu.jpeg'),
+  Capricorn:   asset('Rashis/makara.jpeg'),
+  Aquarius:    asset('Rashis/kumbha.jpeg'),
+  Pisces:      asset('Rashis/meena.jpeg'),
 };
 
 /** Returns the URL for a rashi, or null if unknown. */

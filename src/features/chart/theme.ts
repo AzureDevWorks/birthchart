@@ -1,3 +1,5 @@
+import { asset } from '@/lib/assets';
+
 export const CHART_THEME = {
   // --- Frame ---
   frameStroke: 'hsl(38 85% 52%)',
@@ -45,7 +47,7 @@ export const CHART_THEME = {
   // --- Center medallion (Ganesh) ---
   medallionRadius: 0.14,
   medallionInnerRadius: 0.135,
-  ganeshImagePath: '/ganesh.png',
+  ganeshImagePath: asset('ganesh.png'),
   ganeshImageOpacity: 0.85,
   ganeshImageInset: 0.06,
 

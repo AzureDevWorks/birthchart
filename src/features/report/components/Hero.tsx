@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { asset } from '@/lib/assets';
 import type { BirthData } from '@/domain/astrology/birth-data';
 import { rashiImageUrl } from '../lib/rashi-images';
 import {
@@ -198,7 +199,7 @@ export function Hero({ profile, kundli }: HeroProps) {
             boxShadow: `0 0 0 4px ${C.ivoryDeep}, 0 0 0 5px ${CA.gold(0.13)}`,
           }}
         >
-          <img src="/ganesh.png" alt="Lord Ganesha" className="w-full h-full object-cover" draggable={false} />
+          <img src={asset('ganesh.png')} alt="Lord Ganesha" className="w-full h-full object-cover" draggable={false} />
         </div>
 
         {/* INVOCATION */}
